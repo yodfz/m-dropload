@@ -5,8 +5,14 @@
     <title>Document</title>
     <script src="../src/index.js"></script>
     <style>
-        .js-mdropload-up{
+        .js-mdropload-up {
             position: absolute;
+            text-align: center;
+            width: 100%;
+        }
+
+        .js-mdropload-up {
+            font-size: 30px;
         }
     </style>
 </head>
@@ -20,9 +26,14 @@
         up: {
             fn: function (success, error) {
                 console.log('触发了下拉操作');
+                setTimeout(function () {
+                    success();
+                }, 1000);
             },
             template: {
                 none: '下拉刷新',
+                message: '释放更新',
+                loading: '正在更新，请稍后',
                 success: '刷新成功',
                 error: '刷新失败'
             }
@@ -33,6 +44,8 @@
             },
             template: {
                 none: '上拉刷新',
+                message: '释放更新',
+                loading: '正在更新，请稍后',
                 success: '刷新成功',
                 error: '刷新失败'
             }

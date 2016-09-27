@@ -66,26 +66,13 @@
         var $obj = null;
         $d = $that.document;
         $b = $d.body;
-        // _opt = {
-        //     height // 移动多少的时候触发操作
-        //     up:{
-        //         fn:// 触发时间
-        //         template:{
-        //             none:''
-        //             loading:''
-        //             success:'',
-        //                 error:''
-        //         }
-        //      } // 下拉触发操作
-        //     eventDown // 上拉触发操作
-        // }
         if (element == undefined) {
             $obj = $b;
         } else {
             $obj = element;
         }
         this.opt = _opt;
-        this.opt.windowHeight = window.innerHeight;
+        this.opt.windowHeight = window.innerHeight / 5;
         this.obj = $obj;
         this.obj.css = function (key, value) {
             $utils.css(this, key, value);
@@ -118,7 +105,6 @@
 
     $touch.prototype.initTemplate = function () {
         // 初始化上部分
-        console.log(this);
         var $div;
         if (!document.querySelector('.js-mdropload-up')) {
             $div = document.createElement('div');
@@ -142,20 +128,39 @@
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
+
+
     $touch.end = function (e) {
         console.log('touch end');
-        this.obj.css('transition-duration', '.5s');
-        this.obj.css('transform', 'translateY(0px)');
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        var success = (function () {
+            this.obj.css('transform', 'translateY(0px)');
+            this.upObj.innerHTML = this.opt.up.template.success;
+        }).bind(this);
+        var error = (function () {
+            this.obj.css('transform', 'translateY(0px)');
+            this.upObj.innerHTML = this.opt.up.template.error;
+        }).bind(this);
+        this.obj.css('transition-duration', '.5s');
+        this.obj.css('transform', 'translateY(' + this.opt.height + 'px)');
+        if (mouseY > this.opt.height) {
+            this.upObj.innerHTML = this.opt.up.template.loading;
+            this.opt.up.fn(success, error);
+        } else {
+            success();
+        }
+        // this.upObj.innerHTML = this.opt.up.template.none;
     };
     $touch.move = function (e) {
         console.log('touch move');
         var mouse = $utils.mouseXY(e);
         var mouseY = mouse.y - this.startMouse.y;
-        console.log(mouseY);
-        if (mouseY > 0) {
+        if (mouseY > 0 && mouseY < this.opt.windowHeight) {
             this.obj.css('transform', 'translateY(' + mouseY + 'px)');
+        }
+        if (mouseY > this.opt.height) {
+            this.upObj.innerHTML = this.opt.up.template.message;
         }
     };
     $touch.resize = function (e) {
