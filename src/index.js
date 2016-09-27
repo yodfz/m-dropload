@@ -134,8 +134,11 @@
         $obj.addEventListener('transitionend', function (e) {
             console.log('transitionend');
         });
-        $obj.addEventListener('scroll', function (e) {
-            console.log('scroll');
+        window.addEventListener('scroll', function (e) {
+            if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
+                console.log('go to bottom');
+                // 到底
+            }
         });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translateZ(0px)');
@@ -193,13 +196,15 @@
     };
     $touch.move = function (e) {
         console.log('touch move');
-        var mouse = $utils.mouseXY(e);
-        var mouseY = mouse.y - this.startMouse.y;
-        if (mouseY > 0 && mouseY < this.opt.windowHeight) {
-            this.obj.css('transform', 'translateY(' + mouseY + 'px)');
-        }
-        if (mouseY > this.opt.height) {
-            this.upObj.innerHTML = this.opt.up.template.message;
+        if (getScrollTop() === 0) {
+            var mouse = $utils.mouseXY(e);
+            var mouseY = mouse.y - this.startMouse.y;
+            if (mouseY > 0 && mouseY < this.opt.windowHeight) {
+                this.obj.css('transform', 'translateY(' + mouseY + 'px)');
+            }
+            if (mouseY > this.opt.height) {
+                this.upObj.innerHTML = this.opt.up.template.message;
+            }
         }
     };
     $touch.resize = function (e) {
