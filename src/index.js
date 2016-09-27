@@ -14,7 +14,42 @@
         $eventResize = $hasTouch ? "orientationchange" : "resize",
         $eventcancel = $hasTouch ? "touchcancel" : "mouseup";
     var $touch;
+    var _d = document;
+    var getScrollTop = function getScrollTop() {
+        var bodyScrollTop = 0;
+        var documentScrollTop = 0;
+        if (_d.body) {
+            bodyScrollTop = _d.body.scrollTop;
+        }
+        if (_d.documentElement) {
+            documentScrollTop = _d.documentElement.scrollTop;
+        }
+        return bodyScrollTop - documentScrollTop > 0 ? bodyScrollTop : documentScrollTop;
+    };
 
+// 文档的总高度
+    var getScrollHeight = function getScrollHeight() {
+        var bodyScrollHeight = 0;
+        var documentScrollHeight = 0;
+        if (document.body) {
+            bodyScrollHeight = document.body.scrollHeight;
+        }
+        if (document.documentElement) {
+            documentScrollHeight = document.documentElement.scrollHeight;
+        }
+        return bodyScrollHeight - documentScrollHeight > 0 ? bodyScrollHeight : documentScrollHeight;
+    };
+
+// 浏览器视口的高度
+    var getWindowHeight = function getWindowHeight() {
+        var windowHeight = 0;
+        if (document.compatMode === 'CSS1Compat') {
+            windowHeight = document.documentElement.clientHeight;
+        } else {
+            windowHeight = document.body.clientHeight;
+        }
+        return windowHeight;
+    };
     var $utils = {
         prefix: (function () {
             var styles = window.getComputedStyle(document.documentElement, ''),
@@ -96,6 +131,12 @@
         $obj.addEventListener($eventcancel, function (e) {
             $touch.cancel.call(that, e);
         });
+        $obj.addEventListener('transitionend', function (e) {
+            console.log('transitionend');
+        });
+        $obj.addEventListener('scroll', function (e) {
+            console.log('scroll');
+        });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translateZ(0px)');
         $utils.css($obj, 'position', 'relative');
@@ -134,19 +175,17 @@
         console.log('touch end');
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        // 操作完成之后的回调方法
         var success = (function () {
             this.obj.css('transform', 'translateY(0px)');
             this.upObj.innerHTML = this.opt.up.template.success;
         }).bind(this);
-        var error = (function () {
-            this.obj.css('transform', 'translateY(0px)');
-            this.upObj.innerHTML = this.opt.up.template.error;
-        }).bind(this);
+
         this.obj.css('transition-duration', '.5s');
         this.obj.css('transform', 'translateY(' + this.opt.height + 'px)');
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
-            this.opt.up.fn(success, error);
+            this.opt.up.fn(success);
         } else {
             success();
         }

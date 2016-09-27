@@ -17,14 +17,14 @@
     </style>
 </head>
 <body>
-<div id="touchObj" style="width:100%;height:800px;background-color: #fbfbfb;text-align: center;font-size:60px;">
+<div id="touchObj" style="width:100%;height:8000px;background-color: #fbfbfb;text-align: center;font-size:60px;">
     移动我
 </div>
 <script>
     Mdropload(document.querySelector('#touchObj'), {
         height: 50,
         up: {
-            fn: function (success, error) {
+            fn: function (success) {
                 console.log('触发了下拉操作');
                 setTimeout(function () {
                     success();
@@ -39,7 +39,7 @@
             }
         },
         down: {
-            fn: function (success, error) {
+            fn: function (success) {
                 console.log('触发了上拉操作');
             },
             template: {
