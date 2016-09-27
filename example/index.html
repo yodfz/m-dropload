@@ -5,8 +5,8 @@
     <title>Document</title>
     <script src="../src/index.js"></script>
     <style>
-        .t {
-            : ;
+        .js-mdropload-up{
+            position: absolute;
         }
     </style>
 </head>
@@ -15,7 +15,29 @@
     移动我
 </div>
 <script>
-Mdropload(document.querySelector('#touchObj'));
+    Mdropload(document.querySelector('#touchObj'), {
+        height: 50,
+        up: {
+            fn: function (success, error) {
+                console.log('触发了下拉操作');
+            },
+            template: {
+                none: '下拉刷新',
+                success: '刷新成功',
+                error: '刷新失败'
+            }
+        },
+        down: {
+            fn: function (success, error) {
+                console.log('触发了上拉操作');
+            },
+            template: {
+                none: '上拉刷新',
+                success: '刷新成功',
+                error: '刷新失败'
+            }
+        }
+    });
 </script>
 </body>
 </html>
