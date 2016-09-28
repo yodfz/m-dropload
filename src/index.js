@@ -113,7 +113,7 @@
             if (arguments.length === 2) {
                 $utils.css(this, key, value);
             } else {
-                return this.style[$utils.prefix.css + key];
+                return this.style[key];
             }
         };
         var that = this;
@@ -175,23 +175,26 @@
     $touch.start = function (e) {
         console.log('touch start');
         // 取当前transform高度
-        this.offsetY = this.obj.css('transform').replace('translateY(', '').replace('px)') * 1;
+        this.offsetY = this.obj.css('transform').replace('translateY(', '').replace('px)','') * 1;
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
+        this.isLock = true;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
-
 
     $touch.end = function (e) {
         console.log('touch end');
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
         // 操作完成之后的回调方法
+        this.isLock = false;
         var success = (function () {
-            this.obj.css('transform', 'translateY(0px)');
-            this.upObj.innerHTML = this.opt.up.template.success;
+            if(!this.isLock){
+                this.obj.css('transform', 'translateY(0px)');
+                this.upObj.innerHTML = this.opt.up.template.success;
+            }
         }).bind(this);
 
         this.obj.css('transition-duration', '.5s');
