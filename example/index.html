@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-point="2">
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
@@ -10,9 +10,14 @@
             text-align: center;
             width: 100%;
         }
-
         .js-mdropload-up {
             font-size: 30px;
+        }
+        [data-point='1'] .fs12{
+            font-size:12px;
+                       }
+        [data-point='2'] .fs12{
+            font-size:24px;
         }
     </style>
 </head>
@@ -28,7 +33,7 @@
                 console.log('触发了下拉操作');
                 setTimeout(function () {
                     success();
-                }, 1000);
+                }, 5000);
             },
             template: {
                 none: '下拉刷新',

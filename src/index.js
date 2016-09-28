@@ -146,8 +146,9 @@
             }
         });
         // 初始化CSS
-        $utils.css($obj, 'transform', 'translateZ(0px)');
+        $utils.css($obj, 'transform', 'translate3d(0,0,0)');
         $utils.css($obj, 'position', 'relative');
+        $utils.css($obj, 'z-index', '20');
         this.initTemplate();
         return this;
     };
@@ -175,7 +176,7 @@
     $touch.start = function (e) {
         console.log('touch start');
         // 取当前transform高度
-        this.offsetY = this.obj.css('transform').replace('translateY(', '').replace('px)','') * 1;
+        this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
@@ -191,14 +192,14 @@
         // 操作完成之后的回调方法
         this.isLock = false;
         var success = (function () {
-            if(!this.isLock){
-                this.obj.css('transform', 'translateY(0px)');
+            if (!this.isLock) {
+                this.obj.css('transform', 'translate3d(0,0,0)');
                 this.upObj.innerHTML = this.opt.up.template.success;
             }
         }).bind(this);
 
         this.obj.css('transition-duration', '.5s');
-        this.obj.css('transform', 'translateY(' + this.opt.height + 'px)');
+        this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.opt.up.fn(success);
@@ -209,11 +210,12 @@
     };
     $touch.move = function (e) {
         console.log('touch move');
+        e.preventDefault();
         if (getScrollTop() === 0) {
             var mouse = $utils.mouseXY(e);
             var mouseY = mouse.y - this.startMouse.y;
             if (mouseY > 0 && mouseY < this.opt.windowHeight) {
-                this.obj.css('transform', 'translateY(' + mouseY + this.offsetY + 'px)');
+                this.obj.css('transform', 'translate3d(0,' + (mouseY + this.offsetY) + 'px,0)');
             }
             if (mouseY > this.opt.height) {
                 this.upObj.innerHTML = this.opt.up.template.message;
