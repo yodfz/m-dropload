@@ -66,8 +66,8 @@
                 js: pre[0].toUpperCase() + pre.substr(1)
             };
         })(),
-        css: function (obj, key, value) {
-            obj.style[$utils.prefix.css + key] = value;
+        css: function (obj, key, value, closePrefix) {
+            obj.style[(closePrefix?'':$utils.prefix.css) + key] = value;
         },
         mouseXY: function (_e) {
             // 用于扩展JQ的触摸事件
@@ -97,13 +97,6 @@
         }
     };
 
-    var success = (function () {
-        if (!this.isLock) {
-            this.obj.css('transform', 'translate3d(0,0,0)');
-            this.upObj.innerHTML = this.opt.up.template.success;
-        }
-    });
-
     $touch = function (element, _opt) {
         var $obj = null;
         $d = $that.document;
@@ -124,17 +117,18 @@
             }
         };
         var that = this;
-        // 考虑用代理来监听touchmove
-
         $obj.addEventListener($eventStart, function (e) {
+            alert('touchstart');
             $touch.start.call(that, e);
         });
 
         $obj.addEventListener($eventEnd, function (e) {
+            alert('touchend');
             $touch.end.call(that, e);
         });
 
         $obj.addEventListener($eventMove, function (e) {
+            alert('touchmove');
             $touch.move.call(that, e);
         });
         window.addEventListener($eventResize, function (e) {
@@ -151,13 +145,13 @@
             if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
-                that.opt.down.fn(success.bind(that));
+                that.opt.down.fn();
             }
         });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translate3d(0,0,0)');
-        $utils.css($obj, 'position', 'relative');
-        $utils.css($obj, 'z-index', '20');
+        $utils.css($obj, 'position', 'relative',true);
+        $utils.css($obj, 'z-index', '20',true);
         this.initTemplate();
         return this;
     };
@@ -200,13 +194,20 @@
         var mouseY = this.endMouse.y - this.startMouse.y;
         // 操作完成之后的回调方法
         this.isLock = false;
+        var success = (function () {
+            if (!this.isLock) {
+                this.obj.css('transform', 'translate3d(0,0,0)');
+                this.upObj.innerHTML = this.opt.up.template.success;
+            }
+        }).bind(this);
+
         this.obj.css('transition-duration', '.5s');
         this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
-            this.opt.up.fn(success.bind(this));
+            this.opt.up.fn(success);
         } else {
-            success.bind(this)();
+            success();
         }
         // this.upObj.innerHTML = this.opt.up.template.none;
     };
