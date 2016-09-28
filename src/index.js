@@ -110,7 +110,11 @@
         this.opt.windowHeight = window.innerHeight / 5;
         this.obj = $obj;
         this.obj.css = function (key, value) {
-            $utils.css(this, key, value);
+            if (arguments.length === 2) {
+                $utils.css(this, key, value);
+            } else {
+                return this.style[$utils.prefix.css + key];
+            }
         };
         var that = this;
         $obj.addEventListener($eventStart, function (e) {
@@ -170,6 +174,11 @@
 
     $touch.start = function (e) {
         console.log('touch start');
+        // 取当前transform高度
+        this.offsetY = this.obj.css('transform').replace('translateY(', '').replace('px)') * 1;
+        if (isNaN(this.offsetY)) {
+            this.offsetY = 0;
+        }
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
@@ -201,7 +210,7 @@
             var mouse = $utils.mouseXY(e);
             var mouseY = mouse.y - this.startMouse.y;
             if (mouseY > 0 && mouseY < this.opt.windowHeight) {
-                this.obj.css('transform', 'translateY(' + mouseY + 'px)');
+                this.obj.css('transform', 'translateY(' + mouseY + this.offsetY + 'px)');
             }
             if (mouseY > this.opt.height) {
                 this.upObj.innerHTML = this.opt.up.template.message;
