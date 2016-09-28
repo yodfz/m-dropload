@@ -138,6 +138,7 @@
             if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
+                that.opt.down.fn();
             }
         });
         // 初始化CSS
