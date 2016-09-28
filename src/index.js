@@ -97,6 +97,13 @@
         }
     };
 
+    var success = (function () {
+        if (!this.isLock) {
+            this.obj.css('transform', 'translate3d(0,0,0)');
+            this.upObj.innerHTML = this.opt.up.template.success;
+        }
+    });
+
     $touch = function (element, _opt) {
         var $obj = null;
         $d = $that.document;
@@ -118,6 +125,7 @@
         };
         var that = this;
         // 考虑用代理来监听touchmove
+
         $obj.addEventListener($eventStart, function (e) {
             $touch.start.call(that, e);
         });
@@ -143,7 +151,7 @@
             if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
-                that.opt.down.fn();
+                that.opt.down.fn(success.bind(that));
             }
         });
         // 初始化CSS
@@ -192,20 +200,13 @@
         var mouseY = this.endMouse.y - this.startMouse.y;
         // 操作完成之后的回调方法
         this.isLock = false;
-        var success = (function () {
-            if (!this.isLock) {
-                this.obj.css('transform', 'translate3d(0,0,0)');
-                this.upObj.innerHTML = this.opt.up.template.success;
-            }
-        }).bind(this);
-
         this.obj.css('transition-duration', '.5s');
         this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
-            this.opt.up.fn(success);
+            this.opt.up.fn(success.bind(this));
         } else {
-            success();
+            success.bind(this)();
         }
         // this.upObj.innerHTML = this.opt.up.template.none;
     };
