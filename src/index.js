@@ -117,6 +117,7 @@
             }
         };
         var that = this;
+        // 考虑用代理来监听touchmove
         $obj.addEventListener($eventStart, function (e) {
             $touch.start.call(that, e);
         });
