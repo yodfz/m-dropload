@@ -67,7 +67,7 @@
             };
         })(),
         css: function (obj, key, value, closePrefix) {
-            obj.style[(closePrefix?'':$utils.prefix.css) + key] = value;
+            obj.style[(closePrefix ? '' : $utils.prefix.css) + key] = value;
         },
         mouseXY: function (_e) {
             // 用于扩展JQ的触摸事件
@@ -150,8 +150,12 @@
         });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translate3d(0,0,0)');
-        $utils.css($obj, 'position', 'relative',true);
-        $utils.css($obj, 'z-index', '20',true);
+        $utils.css($obj, 'position', 'relative', true);
+        $utils.css($obj, 'z-index', '20', true);
+        this.status = {
+            lock: false,
+            loading: false
+        };
         this.initTemplate();
         return this;
     };
@@ -183,6 +187,7 @@
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
+        this.upObj.innerHTML = this.opt.up.template.none;
         this.isLock = true;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
