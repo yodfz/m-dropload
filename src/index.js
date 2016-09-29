@@ -98,6 +98,7 @@
     };
     var success = (function () {
         if (!this.isLock) {
+            this.status.loading=false;
             this.obj.css('transform', 'translate3d(0,0,0)');
             this.upObj.innerHTML = this.opt.up.template.success;
         }
@@ -124,17 +125,14 @@
         };
         var that = this;
         $obj.addEventListener($eventStart, function (e) {
-            alert('touchstart');
             $touch.start.call(that, e);
         });
 
         $obj.addEventListener($eventEnd, function (e) {
-            alert('touchend');
             $touch.end.call(that, e);
         });
 
         $obj.addEventListener($eventMove, function (e) {
-            alert('touchmove');
             $touch.move.call(that, e);
         });
         window.addEventListener($eventResize, function (e) {
@@ -151,6 +149,7 @@
             if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
+                that.status.loading=true;
                 that.opt.down.fn(success.bind(that));
             }
         });
@@ -159,6 +158,10 @@
         $utils.css($obj, 'position', 'relative',true);
         $utils.css($obj, 'z-index', '20',true);
         this.initTemplate();
+        this.status = {
+            lock:false,
+            loading:false
+        };
         return this;
     };
 
@@ -189,40 +192,44 @@
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
-        this.isLock = true;
+        this.status.lock=true;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
 
     $touch.end = function (e) {
         console.log('touch end');
-        this.endMouse = $utils.mouseXY(e);
-        var mouseY = this.endMouse.y - this.startMouse.y;
-        // 操作完成之后的回调方法
-        this.isLock = false;
-        var _success=success.bind(this);
-
-        this.obj.css('transition-duration', '.5s');
-        this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
-        if (mouseY > this.opt.height) {
-            this.upObj.innerHTML = this.opt.up.template.loading;
-            this.opt.up.fn(_success);
-        } else {
-            _success();
+        if(this.status.lock){
+            this.endMouse = $utils.mouseXY(e);
+            var mouseY = this.endMouse.y - this.startMouse.y;
+            // 操作完成之后的回调方法
+            this.status.lock= false;
+            var _success=success.bind(this);
+            this.obj.css('transition-duration', '.5s');
+            this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
+            if (mouseY > this.opt.height) {
+                this.upObj.innerHTML = this.opt.up.template.loading;
+                this.status.loading=true;
+                this.opt.up.fn(_success);
+            } else {
+                _success();
+            }
         }
         // this.upObj.innerHTML = this.opt.up.template.none;
     };
     $touch.move = function (e) {
-        console.log('touch move');
-        e.preventDefault();
-        if (getScrollTop() === 0) {
-            var mouse = $utils.mouseXY(e);
-            var mouseY = mouse.y - this.startMouse.y;
-            if (mouseY > 0 && mouseY < this.opt.windowHeight) {
-                this.obj.css('transform', 'translate3d(0,' + (mouseY + this.offsetY) + 'px,0)');
-            }
-            if (mouseY > this.opt.height) {
-                this.upObj.innerHTML = this.opt.up.template.message;
+        if(this.status.lock){
+            console.log('touch move');
+            e.preventDefault();
+            if (getScrollTop() === 0) {
+                var mouse = $utils.mouseXY(e);
+                var mouseY = mouse.y - this.startMouse.y;
+                if (mouseY > 0 && mouseY < this.opt.windowHeight) {
+                    this.obj.css('transform', 'translate3d(0,' + (mouseY + this.offsetY) + 'px,0)');
+                }
+                if (mouseY > this.opt.height) {
+                    this.upObj.innerHTML = this.opt.up.template.message;
+                }
             }
         }
     };
