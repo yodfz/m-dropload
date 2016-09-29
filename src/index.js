@@ -67,7 +67,7 @@
             };
         })(),
         css: function (obj, key, value, closePrefix) {
-            obj.style[(closePrefix ? '' : $utils.prefix.css) + key] = value;
+            obj.style[(closePrefix?'':$utils.prefix.css) + key] = value;
         },
         mouseXY: function (_e) {
             // 用于扩展JQ的触摸事件
@@ -96,6 +96,12 @@
             }
         }
     };
+    var success = (function () {
+        if (!this.isLock) {
+            this.obj.css('transform', 'translate3d(0,0,0)');
+            this.upObj.innerHTML = this.opt.up.template.success;
+        }
+    });
 
     $touch = function (element, _opt) {
         var $obj = null;
@@ -145,17 +151,13 @@
             if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
-                that.opt.down.fn();
+                that.opt.down.fn(success.bind(that));
             }
         });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translate3d(0,0,0)');
-        $utils.css($obj, 'position', 'relative', true);
-        $utils.css($obj, 'z-index', '20', true);
-        this.status = {
-            lock: false,
-            loading: false
-        };
+        $utils.css($obj, 'position', 'relative',true);
+        $utils.css($obj, 'z-index', '20',true);
         this.initTemplate();
         return this;
     };
@@ -187,7 +189,6 @@
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
-        this.upObj.innerHTML = this.opt.up.template.none;
         this.isLock = true;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
@@ -199,20 +200,15 @@
         var mouseY = this.endMouse.y - this.startMouse.y;
         // 操作完成之后的回调方法
         this.isLock = false;
-        var success = (function () {
-            if (!this.isLock) {
-                this.obj.css('transform', 'translate3d(0,0,0)');
-                this.upObj.innerHTML = this.opt.up.template.success;
-            }
-        }).bind(this);
+        var _success=success.bind(this);
 
         this.obj.css('transition-duration', '.5s');
         this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
-            this.opt.up.fn(success);
+            this.opt.up.fn(_success);
         } else {
-            success();
+            _success();
         }
         // this.upObj.innerHTML = this.opt.up.template.none;
     };
