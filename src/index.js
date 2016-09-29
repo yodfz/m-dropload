@@ -97,7 +97,7 @@
         }
     };
     var success = (function () {
-        if (!this.isLock) {
+        if (!this.isLock && this.status.loading) {
             this.status.loading=false;
             this.obj.css('transform', 'translate3d(0,0,0)');
             this.upObj.innerHTML = this.opt.up.template.success;
@@ -193,6 +193,7 @@
             this.offsetY = 0;
         }
         this.status.lock=true;
+        this.status.loading=false;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
