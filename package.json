@@ -1,0 +1,38 @@
+{
+  "name": "m-dropload",
+  "version": "1.0.0",
+  "description": "mobile drop load",
+  "main": "dist/MDropload.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yodfz/m-dropload.git"
+  },
+  "keywords": [
+    "mobile",
+    "dropload",
+    "load",
+    "scrollevent",
+    "scroll",
+    "load"
+  ],
+  "author": "yodfz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yodfz/m-dropload/issues"
+  },
+  "homepage": "https://github.com/yodfz/m-dropload#readme",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.8.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-es2015-rollup": "^1.2.0",
+    "rollup": "^0.36.1",
+    "rollup-plugin-babel": "^2.6.1"
+  }
+}
