@@ -8,6 +8,7 @@ let $that = window,
 //$lock;
 let $touch;
 let success = (function () {
+    let that = this;
     if (!this.isLock && this.status.loading) {
         this.status.loading = false;
         this.obj.css('transform', 'translate3d(0,0,0)');
