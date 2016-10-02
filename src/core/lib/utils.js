@@ -15,7 +15,7 @@ export default {
         };
     })(),
     css: function (obj, key, value, closePrefix) {
-        obj.style[(closePrefix ? '' : $utils.prefix.css) + key] = value;
+        obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
     },
     mouseXY: function (_e) {
         // 用于扩展JQ的触摸事件

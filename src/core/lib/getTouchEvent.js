@@ -1,4 +1,4 @@
-let $hasTouch = "ontouchstart" in $that;
+let $hasTouch = "ontouchstart" in window;
 let eventStart = $hasTouch ? "touchstart" : "mousedown",
     eventEnd = $hasTouch ? "touchend" : "mouseup",
     eventMove = $hasTouch ? "touchmove" : "mousemove",
