@@ -1,8 +1,8 @@
 {
-  "name": "m-dropload",
+  "name": "vue-dropload",
   "version": "1.0.0",
   "description": "mobile drop load",
-  "main": "dist/MDropload.js",
+  "main": "dist/MDropload.vue.js",
   "directories": {
     "example": "example"
   },

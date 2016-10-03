@@ -39,3 +39,17 @@ Mdropload(document.querySelector('#touchObj'), {
         }
     });
 ```
+
+## vue使用
+
+```
+npm install --save vue-dropload
+```
+
+### 安装
+
+```js
+import vue-dropload from 'vue-dropload';
+import vue from 'vue';
+vue.use(vue-dropload);
+```
