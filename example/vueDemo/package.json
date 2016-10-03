@@ -13,7 +13,8 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "vue": "^2.0.1"
+    "vue": "^2.0.1",
+    "vue-dropload": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
