@@ -159,5 +159,12 @@ $touch.cancel = function (e) {
 };
 
 export default (_el, _opt)=> {
+    // 如果_el传递进来是非ELEMENT 则进行转换
+    if (!(_el instanceof Element)) {
+        _el = document.querySelector(_el);
+    }
+    if(_el === null) {
+        throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
+    }
     return new $touch(_el, _opt);
 }
