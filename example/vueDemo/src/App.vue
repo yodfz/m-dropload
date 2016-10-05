@@ -29,7 +29,7 @@ export default {
   components: {
     Hello
   },
-  ready () {
+  mounted () {
     console.log('ready ok')
     vue.Mdropload(
       document.querySelector('#app'),
