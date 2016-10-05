@@ -1,7 +1,7 @@
 {
   "name": "vue-dropload",
-  "version": "1.0.0",
-  "description": "mobile drop load",
+  "version": "1.0.1",
+  "description": "mobile drop load,support base js and vue framework.",
   "main": "dist/MDropload.vue.js",
   "directories": {
     "example": "example"
