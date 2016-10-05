@@ -24,23 +24,23 @@
 
 <script>
 import Hello from './components/Hello'
-import vue from 'vue';
+import vue from 'vue'
 export default {
   components: {
     Hello
   },
   ready () {
-    console.log('ready ok');
+    console.log('ready ok')
     vue.Mdropload(
       document.querySelector('#app'),
       {
         height: 50,
         up: {
           fn: function (success) {
-            console.log('触发了下拉操作');
+            console.log('触发了下拉操作')
             setTimeout(function () {
-              success();
-            }, 5000);
+              success()
+            }, 5000)
           },
           template: {
             none: '下拉刷新',
@@ -52,7 +52,7 @@ export default {
         },
         down: {
           fn: function (success) {
-            console.log('触发了上拉操作');
+            console.log('触发了上拉操作')
           },
           template: {
             none: '上拉刷新',
