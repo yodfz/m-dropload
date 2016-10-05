@@ -1,75 +1,26 @@
-/*
- 下拉OR上拉刷新模块
- * */
-(function () {
-    "use strict";
-    var $that = this,
-        $d,
-        $b;
-    //$lock;
-    var $hasTouch = "ontouchstart" in $that;
-    var $eventStart = $hasTouch ? "touchstart" : "mousedown",
-        $eventEnd = $hasTouch ? "touchend" : "mouseup",
-        $eventMove = $hasTouch ? "touchmove" : "mousemove",
-        $eventResize = $hasTouch ? "orientationchange" : "resize",
-        $eventcancel = $hasTouch ? "touchcancel" : "mouseup";
-    var $touch;
-    var _d = document;
-    var getScrollTop = function getScrollTop() {
-        var bodyScrollTop = 0;
-        var documentScrollTop = 0;
-        if (_d.body) {
-            bodyScrollTop = _d.body.scrollTop;
-        }
-        if (_d.documentElement) {
-            documentScrollTop = _d.documentElement.scrollTop;
-        }
-        return bodyScrollTop - documentScrollTop > 0 ? bodyScrollTop : documentScrollTop;
-    };
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) :
+            (global.Mdropload = factory());
+}(this, (function () {
+    'use strict';
 
-// 文档的总高度
-    var getScrollHeight = function getScrollHeight() {
-        var bodyScrollHeight = 0;
-        var documentScrollHeight = 0;
-        if (document.body) {
-            bodyScrollHeight = document.body.scrollHeight;
-        }
-        if (document.documentElement) {
-            documentScrollHeight = document.documentElement.scrollHeight;
-        }
-        return bodyScrollHeight - documentScrollHeight > 0 ? bodyScrollHeight : documentScrollHeight;
-    };
-
-// 浏览器视口的高度
-    var getWindowHeight = function getWindowHeight() {
-        var windowHeight = 0;
-        if (document.compatMode === 'CSS1Compat') {
-            windowHeight = document.documentElement.clientHeight;
-        } else {
-            windowHeight = document.body.clientHeight;
-        }
-        return windowHeight;
-    };
     var $utils = {
-        prefix: (function () {
+        prefix: function () {
             var styles = window.getComputedStyle(document.documentElement, ''),
-                pre = (Array.prototype.slice
-                        .call(styles)
-                        .join('')
-                        .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-                )[1],
-                dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+                pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || styles.OLink === '' && ['', 'o'])[1],
+                dom = 'WebKit|Moz|MS|O'.match(new RegExp('(' + pre + ')', 'i'))[1];
             return {
                 dom: dom,
                 lowercase: pre,
                 css: '-' + pre + '-',
                 js: pre[0].toUpperCase() + pre.substr(1)
             };
-        })(),
-        css: function (obj, key, value, closePrefix) {
-            obj.style[(closePrefix?'':$utils.prefix.css) + key] = value;
+        }(),
+        css: function css(obj, key, value, closePrefix) {
+            obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
         },
-        mouseXY: function (_e) {
+        mouseXY: function mouseXY(_e) {
             // 用于扩展JQ的触摸事件
             var $x, $y;
             if (_e.originalEvent && _e.originalEvent.changedTouches) {
@@ -78,34 +29,96 @@
             } else if (_e.changedTouches) {
                 $x = _e.changedTouches[0].pageX;
                 $y = _e.changedTouches[0].pageY;
-            }
-            else {
+            } else {
                 $x = _e.pageX;
                 $y = _e.pageY;
             }
             return {x: $x, y: $y};
         },
         //DOM没有提供insertAfter()方法
-        insertAfter: function (nowNode, newNode) {
+        insertAfter: function insertAfter(nowNode, newNode) {
             var parent = nowNode.parentNode;
             if (parent.lastChild == nowNode) {
                 parent.appendChild(newNode);
-            }
-            else {
+            } else {
                 parent.insertBefore(newNode, nowNode.nextSibling);
             }
         }
     };
-    var success = (function () {
+
+    var _d = document;
+
+    var scroll = {
+        // 获取滚动条高度
+        getScrollTop: function getScrollTop() {
+            var bodyScrollTop = 0;
+            var documentScrollTop = 0;
+            if (_d.body) {
+                bodyScrollTop = _d.body.scrollTop;
+            }
+            if (_d.documentElement) {
+                documentScrollTop = _d.documentElement.scrollTop;
+            }
+            return bodyScrollTop - documentScrollTop > 0 ? bodyScrollTop : documentScrollTop;
+        },
+
+        // 文档的总高度
+        getScrollHeight: function getScrollHeight() {
+            var bodyScrollHeight = 0;
+            var documentScrollHeight = 0;
+            if (document.body) {
+                bodyScrollHeight = document.body.scrollHeight;
+            }
+            if (document.documentElement) {
+                documentScrollHeight = document.documentElement.scrollHeight;
+            }
+            return bodyScrollHeight - documentScrollHeight > 0 ? bodyScrollHeight : documentScrollHeight;
+        },
+
+        // 浏览器视口的高度
+        getWindowHeight: function getWindowHeight() {
+            var windowHeight = 0;
+            if (document.compatMode === 'CSS1Compat') {
+                windowHeight = document.documentElement.clientHeight;
+            } else {
+                windowHeight = document.body.clientHeight;
+            }
+            return windowHeight;
+        }
+    };
+
+    var $hasTouch = "ontouchstart" in window;
+    var eventStart = $hasTouch ? "touchstart" : "mousedown";
+    var eventEnd = $hasTouch ? "touchend" : "mouseup";
+    var eventMove = $hasTouch ? "touchmove" : "mousemove";
+    var eventResize = $hasTouch ? "orientationchange" : "resize";
+    var eventcancel = $hasTouch ? "touchcancel" : "mouseup";
+
+    var touchEvent = {
+        eventStart: eventStart,
+        eventEnd: eventEnd,
+        eventMove: eventMove,
+        eventResize: eventResize,
+        eventcancel: eventcancel
+    };
+
+    var $that = window;
+    var $d = void 0;
+    var $b = void 0;
+//$lock;
+    var _$touch;
+    var success = function success() {
+        var that = this;
         if (!this.isLock && this.status.loading) {
-            this.status.loading=false;
+            this.status.loading = false;
             this.obj.css('transform', 'translate3d(0,0,0)');
             this.upObj.innerHTML = this.opt.up.template.success;
         }
-    });
+    };
 
-    $touch = function (element, _opt) {
+    _$touch = function $touch(element, _opt) {
         var $obj = null;
+        var that = this;
         $d = $that.document;
         $b = $d.body;
         if (element == undefined) {
@@ -113,64 +126,64 @@
         } else {
             $obj = element;
         }
-        this.opt = _opt;
-        this.opt.windowHeight = window.innerHeight / 5;
-        this.obj = $obj;
-        this.obj.css = function (key, value) {
+        that.opt = _opt;
+        that.opt.windowHeight = window.innerHeight / 5;
+        that.obj = $obj;
+        that.obj.css = function (key, value) {
             if (arguments.length === 2) {
                 $utils.css(this, key, value);
             } else {
                 return this.style[key];
             }
         };
-        var that = this;
-        $obj.addEventListener($eventStart, function (e) {
-            $touch.start.call(that, e);
+        $obj.addEventListener(touchEvent.eventStart, function (e) {
+            _$touch.start.call(that, e);
         });
 
-        $obj.addEventListener($eventEnd, function (e) {
-            $touch.end.call(that, e);
+        $obj.addEventListener(touchEvent.eventEnd, function (e) {
+            _$touch.end.call(that, e);
         });
 
-        $obj.addEventListener($eventMove, function (e) {
-            $touch.move.call(that, e);
+        $obj.addEventListener(touchEvent.eventMove, function (e) {
+            _$touch.move.call(that, e);
         });
-        window.addEventListener($eventResize, function (e) {
-            $touch.resize.call(that, e);
+        window.addEventListener(touchEvent.eventResize, function (e) {
+            _$touch.resize.call(that, e);
         });
 
-        $obj.addEventListener($eventcancel, function (e) {
-            $touch.cancel.call(that, e);
+        $obj.addEventListener(touchEvent.eventcancel, function (e) {
+            _$touch.cancel.call(that, e);
         });
         $obj.addEventListener('transitionend', function (e) {
             console.log('transitionend');
         });
         window.addEventListener('scroll', function (e) {
-            if (getScrollTop() + getWindowHeight() >= getScrollHeight() - 50) {
+            if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
                 console.log('go to bottom');
                 // 到底
-                that.status.loading=true;
+                that.status.loading = true;
                 that.opt.down.fn(success.bind(that));
             }
         });
         // 初始化CSS
         $utils.css($obj, 'transform', 'translate3d(0,0,0)');
-        $utils.css($obj, 'position', 'relative',true);
-        $utils.css($obj, 'z-index', '20',true);
-        this.initTemplate();
-        this.status = {
-            lock:false,
-            loading:false
+        $utils.css($obj, 'position', 'relative', true);
+        $utils.css($obj, 'z-index', '20', true);
+        that.initTemplate();
+        that.status = {
+            lock: false,
+            loading: false
         };
-        return this;
+        return that;
     };
 
-    $touch.prototype.initTemplate = function () {
+    _$touch.prototype.initTemplate = function () {
         // 初始化上部分
         var $div;
+        var that = this;
         if (!document.querySelector('.js-mdropload-up')) {
             $div = document.createElement('div');
-            $div.innerHTML = this.opt.up.template.none;
+            $div.innerHTML = that.opt.up.template.none;
             $div.className = 'js-mdropload-up';
             this.obj.parentNode.insertBefore($div, this.obj);
         }
@@ -181,36 +194,41 @@
             $div.className = 'js-mdropload-down';
             $utils.insertAfter(this.obj, $div);
         }
-        this.upObj = document.querySelector('.js-mdropload-up');
-        this.downObj = document.querySelector('.js-mdropload-down');
+        that.upObj = document.querySelector('.js-mdropload-up');
+        that.downObj = document.querySelector('.js-mdropload-down');
     };
 
-    $touch.start = function (e) {
+    _$touch.start = function (e) {
         console.log('touch start');
         // 取当前transform高度
         this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
         if (isNaN(this.offsetY)) {
             this.offsetY = 0;
         }
-        this.status.lock=true;
-        this.status.loading=false;
+        this.status.lock = true;
+        this.status.loading = false;
         this.obj.css('transition-duration', '0s');
         this.startMouse = $utils.mouseXY(e);
     };
 
-    $touch.end = function (e) {
+    _$touch.end = function (e) {
         console.log('touch end');
-        if(this.status.lock){
+        if (this.status.lock) {
             this.endMouse = $utils.mouseXY(e);
             var mouseY = this.endMouse.y - this.startMouse.y;
-            // 操作完成之后的回调方法
-            this.status.lock= false;
-            var _success=success.bind(this);
             this.obj.css('transition-duration', '.5s');
-            this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
+            if (mouseY < this.opt.height) {
+                this.obj.css('transform', 'translate3d(0,0px,0)');
+            } else {
+                this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
+            }
+            // 操作完成之后的回调方法
+            this.status.lock = false;
+            var _success = success.bind(this);
+
             if (mouseY > this.opt.height) {
                 this.upObj.innerHTML = this.opt.up.template.loading;
-                this.status.loading=true;
+                this.status.loading = true;
                 this.opt.up.fn(_success);
             } else {
                 _success();
@@ -218,28 +236,32 @@
         }
         // this.upObj.innerHTML = this.opt.up.template.none;
     };
-    $touch.move = function (e) {
-        if(this.status.lock){
+    _$touch.move = function (e) {
+        var that = this;
+        if (that.status.lock) {
             console.log('touch move');
             e.preventDefault();
-            if (getScrollTop() === 0) {
+            if (scroll.getScrollTop() === 0) {
                 var mouse = $utils.mouseXY(e);
-                var mouseY = mouse.y - this.startMouse.y;
-                if (mouseY > 0 && mouseY < this.opt.windowHeight) {
-                    this.obj.css('transform', 'translate3d(0,' + (mouseY + this.offsetY) + 'px,0)');
+                var mouseY = mouse.y - that.startMouse.y;
+                if (mouseY > 0 && mouseY < that.opt.windowHeight) {
+                    this.obj.css('transform', 'translate3d(0,' + (mouseY + that.offsetY) + 'px,0)');
                 }
-                if (mouseY > this.opt.height) {
-                    this.upObj.innerHTML = this.opt.up.template.message;
+                if (mouseY > that.opt.height) {
+                    that.upObj.innerHTML = that.opt.up.template.message;
                 }
             }
         }
     };
-    $touch.resize = function (e) {
+    _$touch.resize = function (e) {
+    };
+    _$touch.cancel = function (e) {
+    };
 
-    };
-    $touch.cancel = function (e) {
-    };
-    $that.Mdropload = function (_el, _opt) {
-        return new $touch(_el, _opt);
-    };
-}).call(this, document);
+    var index = (function (_el, _opt) {
+        return new _$touch(_el, _opt);
+    });
+
+    return index;
+
+})));
