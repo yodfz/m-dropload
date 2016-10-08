@@ -1,6 +1,8 @@
 import $utils from './lib/utils';
 import scroll from './lib/scroll';
 import touchEvent from './lib/getTouchEvent';
+import css from './lib/css';
+
 let $that = window,
     $d,
     $b;
@@ -159,6 +161,8 @@ $touch.cancel = function (e) {
 };
 
 export default (_el, _opt)=> {
+    // 参数初始化
+    css.init();
     // 如果_el传递进来是非ELEMENT 则进行转换
     if (!(_el instanceof Element)) {
         _el = document.querySelector(_el);
