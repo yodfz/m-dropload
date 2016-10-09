@@ -140,6 +140,9 @@ $touch.start = function (e) {
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
     this.startMouse = $utils.mouseXY(e);
+    // 再次初始化字符
+    this.upObj.innerHTML = this.opt.up.template.none;
+    this.downObj.innerHTML = this.opt.down.template.none;
 };
 
 $touch.end = function (e) {

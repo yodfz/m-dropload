@@ -10,6 +10,8 @@ export default {
         .js-mdropload-up {
             position: absolute;
             text-align: center;
+            height:30px;
+            line-height:30px;
             width: 100%;
             opacity:0;
             transition-duration: .2s;

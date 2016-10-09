@@ -56,7 +56,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -66,12 +66,14 @@ var callback = function callback() {
     var fn = {
         success: function success() {
             if (!that.isLock && that.status.loading) {
+                console.log('success');
                 fn.reset();
                 that.upObj.innerHTML = that.opt.up.template.success;
                 that.downObj.innerHTML = that.opt.down.template.success;
             }
         },
         reset: function reset() {
+            console.log('reset');
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
@@ -267,6 +269,9 @@ _$touch.start = function (e) {
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
     this.startMouse = utils.mouseXY(e);
+    // 再次初始化字符
+    this.upObj.innerHTML = this.opt.up.template.none;
+    this.downObj.innerHTML = this.opt.down.template.none;
 };
 
 _$touch.end = function (e) {
