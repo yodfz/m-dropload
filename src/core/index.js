@@ -8,12 +8,14 @@ let $that = window,
     $b;
 //$lock;
 var $touch;
+// 加载成功
 let success = (function () {
     let that = this;
-    if (!this.isLock && this.status.loading) {
-        this.status.loading = false;
-        this.obj.css('transform', 'translate3d(0,0,0)');
-        this.upObj.innerHTML = this.opt.up.template.success;
+    if (!that.isLock && that.status.loading) {
+        that.status.loading = false;
+        that.obj.css('transform', 'translate3d(0,0,0)');
+        that.upObj.innerHTML = that.opt.up.template.success;
+        that.downObj.innerHTML = that.opt.down.template.success;
     }
 });
 
@@ -59,7 +61,9 @@ $touch = function (element, _opt) {
         console.log('transitionend');
     });
     window.addEventListener('scroll', (e) => {
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
+        // 已经在执行了，无需再次执行
+        if(that.status.loading) return;
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             console.log('go to bottom');
             // 到底
             that.status.loading = true;
@@ -115,6 +119,7 @@ $touch.start = function (e) {
 $touch.end = function (e) {
     console.log('touch end');
     if (this.status.lock) {
+        e.stopPropagation();
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
         this.obj.css('transition-duration', '.5s');
@@ -126,7 +131,7 @@ $touch.end = function (e) {
         // 操作完成之后的回调方法
         this.status.lock = false;
         var _success = success.bind(this);
-
+        // 查询是否到底部
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
@@ -140,9 +145,9 @@ $touch.end = function (e) {
 $touch.move = function (e) {
     let that = this;
     if (that.status.lock) {
-        console.log('touch move');
-        e.preventDefault();
         if (scroll.getScrollTop() === 0) {
+            console.log('touch move');
+            e.preventDefault();
             var mouse = $utils.mouseXY(e);
             var mouseY = mouse.y - that.startMouse.y;
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
@@ -170,5 +175,6 @@ export default (_el, _opt)=> {
     if(_el === null) {
         throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
     }
+    _el.classList.add('js-mdropload');
     return new $touch(_el, _opt);
 }
