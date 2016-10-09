@@ -290,7 +290,8 @@ _$touch.end = function (e) {
             this.status.loading = true;
             this.opt.up.fn(_cb);
         } else {
-            _cb.success();
+            console.log('reset');
+            _cb.reset();
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
