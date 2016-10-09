@@ -41,38 +41,58 @@ $touch = function (element, _opt) {
             return this.style[key];
         }
     };
-    $obj.addEventListener(touchEvent.eventStart, (e) => {
+
+
+    // 事件缓存,以便销毁
+    function touchstart (e) {
         $touch.start.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventEnd, (e) => {
+    }
+    function touchend(e) {
         $touch.end.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventMove, (e) => {
+    }
+    function touchmove(e) {
         $touch.move.call(that, e);
-    });
-    window.addEventListener(touchEvent.eventResize, (e) => {
+    }
+    function touchresize(e) {
         $touch.resize.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventcancel, (e) => {
+    }
+    function touchcancel(e) {
         $touch.cancel.call(that, e);
-    });
-    $obj.addEventListener('transitionend', (e) => {
+    }
+    function transitionedn(e) {
         console.log('transitionend');
-    });
-    window.addEventListener('scroll', (e) => {
+    }
+    function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             console.log('go to bottom');
             // 到底
             that.status.loading = true;
-
             that.opt.down.fn(callback.call(that));
         }
-    });
+    }
+    $obj.addEventListener(touchEvent.eventStart, touchstart);
+    $obj.addEventListener(touchEvent.eventEnd, touchend);
+    $obj.addEventListener(touchEvent.eventMove, touchmove);
+    window.addEventListener(touchEvent.eventResize, touchresize);
+    $obj.addEventListener(touchEvent.eventcancel, touchcancel);
+    $obj.addEventListener('transitionend', transitionedn);
+    window.addEventListener('scroll', eventscroll);
+    // 销毁
+    that.destroy = function () {
+        console.log('load destroy');
+        callback.call(that).reset();
+        $obj.removeEventListener(touchEvent.eventStart, touchstart);
+        $obj.removeEventListener(touchEvent.eventEnd, touchend);
+        $obj.removeEventListener(touchEvent.eventMove, touchmove);
+        $obj.removeEventListener(touchEvent.eventcancel, touchcancel);
+        $obj.removeEventListener('transitionend', transitionedn);
+        window.removeEventListener(touchEvent.eventResize, touchresize);
+        window.removeEventListener('scroll', eventscroll);
+        // 等待回收
+        // that = null;
+    };
     // 初始化CSS
     $utils.css($obj, 'transform', 'translate3d(0,0,0)');
     $utils.css($obj, 'position', 'relative', true);
