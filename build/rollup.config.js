@@ -5,6 +5,6 @@ export default {
     entry: './src/core/index.js',
     plugins: [babel({presets: [es2015Rollup]})],
     format: 'umd',
-    dest: './dist/Mdropload.rollup.js',
+    dest: './dist/Mdropload.js',
     moduleName: 'Mdropload'
 };

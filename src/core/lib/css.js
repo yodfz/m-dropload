@@ -11,6 +11,8 @@ export default {
             position: absolute;
             text-align: center;
             width: 100%;
+            opacity:0;
+            transition-duration: .2s;
         }
         .js-mdropload-message {
             opacity:0;

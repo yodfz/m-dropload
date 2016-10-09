@@ -46,6 +46,7 @@
         down: {
             fn: function (success) {
                 console.log('触发了上拉操作');
+                success();
             },
             template: {
                 none: '上拉刷新',

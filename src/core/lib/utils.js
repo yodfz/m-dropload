@@ -1,4 +1,4 @@
-export default {
+let utils = {
     prefix: (function () {
         var styles = window.getComputedStyle(document.documentElement, ''),
             pre = (Array.prototype.slice
@@ -16,6 +16,13 @@ export default {
     })(),
     css: function (obj, key, value, closePrefix) {
         obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
+    },
+    elementCSS: function (key, value) {
+        if (arguments.length === 2) {
+            utils.css(this, key, value);
+        } else {
+            return this.style[key];
+        }
     },
     mouseXY: function (_e) {
         // 用于扩展JQ的触摸事件
@@ -44,3 +51,4 @@ export default {
         }
     }
 };
+export default utils;

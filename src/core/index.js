@@ -1,7 +1,8 @@
 import $utils from './lib/utils';
-import scroll from './lib/scroll';
-import touchEvent from './lib/getTouchEvent';
 import css from './lib/css';
+import callback from './lib/callback';
+import touchEvent from './lib/getTouchEvent';
+import scroll from './lib/scroll';
 
 let $that = window,
     $d,
@@ -9,15 +10,16 @@ let $that = window,
 //$lock;
 var $touch;
 // 加载成功
-let success = (function () {
-    let that = this;
-    if (!that.isLock && that.status.loading) {
-        that.status.loading = false;
-        that.obj.css('transform', 'translate3d(0,0,0)');
-        that.upObj.innerHTML = that.opt.up.template.success;
-        that.downObj.innerHTML = that.opt.down.template.success;
-    }
-});
+// let success = (function () {
+//    let that = this;
+//    if (!that.isLock && that.status.loading) {
+//        that.status.loading = false;
+//        that.obj.css('transform', 'translate3d(0,0,0)');
+//        that.upObj.css('opacity', '0');
+//        that.upObj.innerHTML = that.opt.up.template.success;
+//        that.downObj.innerHTML = that.opt.down.template.success;
+//    }
+// });
 
 $touch = function (element, _opt) {
     let $obj = null;
@@ -62,12 +64,13 @@ $touch = function (element, _opt) {
     });
     window.addEventListener('scroll', (e) => {
         // 已经在执行了，无需再次执行
-        if(that.status.loading) return;
+        if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             console.log('go to bottom');
             // 到底
-            that.status.loading = true;
-            that.opt.down.fn(success.bind(that));
+            that.status.loading = true
+
+            that.opt.down.fn(callback.bind(that));
         }
     });
     // 初始化CSS
@@ -101,6 +104,9 @@ $touch.prototype.initTemplate = function () {
     }
     that.upObj = document.querySelector('.js-mdropload-up');
     that.downObj = document.querySelector('.js-mdropload-down');
+    //TODO: 此处需要优化
+    that.upObj.css = $utils.elementCSS.bind(that.upObj);
+    that.downObj.css = $utils.elementCSS.bind(that.downObj);
 };
 
 $touch.start = function (e) {
@@ -130,14 +136,14 @@ $touch.end = function (e) {
         }
         // 操作完成之后的回调方法
         this.status.lock = false;
-        var _success = success.bind(this);
+        var _cb = callback.bind(this);
         // 查询是否到底部
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up.fn(_success);
+            this.opt.up.fn(_cb);
         } else {
-            _success();
+            _cb.success();
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
@@ -148,10 +154,14 @@ $touch.move = function (e) {
         if (scroll.getScrollTop() === 0) {
             console.log('touch move');
             e.preventDefault();
-            var mouse = $utils.mouseXY(e);
-            var mouseY = mouse.y - that.startMouse.y;
+            let mouse = $utils.mouseXY(e);
+            let mouseY = mouse.y - that.startMouse.y;
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                this.obj.css('transform', 'translate3d(0,' + (mouseY + that.offsetY) + 'px,0)');
+                let offset = (mouseY + that.offsetY);
+                let opacity = (offset / that.opt.height).toFixed(2);
+                opacity = opacity > 1 ? 1 : opacity;
+                that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
+                that.upObj.css('opacity', opacity);
             }
             if (mouseY > that.opt.height) {
                 that.upObj.innerHTML = that.opt.up.template.message;
@@ -172,7 +182,7 @@ export default (_el, _opt)=> {
     if (!(_el instanceof Element)) {
         _el = document.querySelector(_el);
     }
-    if(_el === null) {
+    if (_el === null) {
         throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
     }
     _el.classList.add('js-mdropload');
