@@ -29,10 +29,10 @@
     Mdropload(document.querySelector('#touchObj'), {
         height: 50,
         up: {
-            fn: function (success) {
+            fn: function (cb) {
                 console.log('触发了下拉操作');
                 setTimeout(function () {
-                    success();
+                    cb.success();
                 }, 5000);
             },
             template: {
@@ -44,9 +44,9 @@
             }
         },
         down: {
-            fn: function (success) {
+            fn: function (cb) {
                 console.log('触发了上拉操作');
-                success();
+                cb.success();
             },
             template: {
                 none: '上拉刷新',

@@ -68,9 +68,9 @@ $touch = function (element, _opt) {
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             console.log('go to bottom');
             // 到底
-            that.status.loading = true
+            that.status.loading = true;
 
-            that.opt.down.fn(callback.bind(that));
+            that.opt.down.fn(callback.call(that));
         }
     });
     // 初始化CSS
@@ -136,7 +136,7 @@ $touch.end = function (e) {
         }
         // 操作完成之后的回调方法
         this.status.lock = false;
-        var _cb = callback.bind(this);
+        var _cb = callback.call(this);
         // 查询是否到底部
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;

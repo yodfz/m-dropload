@@ -61,21 +61,23 @@ var css$1 = {
     }
 };
 
-var callback = {
-    success: function success() {
-        var that = this;
-        if (!that.isLock && that.status.loading) {
-            callback.reset();
-            that.upObj.innerHTML = that.opt.up.template.success;
-            that.downObj.innerHTML = that.opt.down.template.success;
+var callback = function callback() {
+    var that = this;
+    var fn = {
+        success: function success() {
+            if (!that.isLock && that.status.loading) {
+                fn.reset();
+                that.upObj.innerHTML = that.opt.up.template.success;
+                that.downObj.innerHTML = that.opt.down.template.success;
+            }
+        },
+        reset: function reset() {
+            that.status.loading = false;
+            that.obj.css('transform', 'translate3d(0,0,0)');
+            that.upObj.css('opacity', '0');
         }
-    },
-    reset: function reset() {
-        var that = this;
-        that.status.loading = false;
-        that.obj.css('transform', 'translate3d(0,0,0)');
-        that.upObj.css('opacity', '0');
-    }
+    };
+    return fn;
 };
 
 var $hasTouch = "ontouchstart" in window;
@@ -195,7 +197,8 @@ _$touch = function $touch(element, _opt) {
             console.log('go to bottom');
             // 到底
             that.status.loading = true;
-            that.opt.down.fn(success.bind(that));
+
+            that.opt.down.fn(callback.call(that));
         }
     });
     // 初始化CSS
@@ -261,14 +264,14 @@ _$touch.end = function (e) {
         }
         // 操作完成之后的回调方法
         this.status.lock = false;
-        var _success = success.bind(this);
+        var _cb = callback.call(this);
         // 查询是否到底部
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up.fn(_success);
+            this.opt.up.fn(_cb);
         } else {
-            _success();
+            _cb.success();
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
