@@ -13,18 +13,19 @@ _opt:
 |height|下拉多少PX进行刷新操作|
 |up|参考 fnopt|
 |down|参考 fnopt|
-|fnopt|
-    fn:下拉触发的方法
-    template:包含需要渲染的各种文字模版
-    ```js
-    {
-        none: '下拉刷新',
-        message: '释放更新',
-        loading: '正在更新，请稍后',
-        success: '刷新成功',
-        error: '刷新失败'
-    }
-    ```
+|fnopt|{fn:下拉触发的方法, <br>
+            template:包含需要渲染的各种文字模版}|
+   
+> template结构   
+```js
+{
+    none: '下拉刷新',
+    message: '释放更新',
+    loading: '正在更新，请稍后',
+    success: '刷新成功',
+    error: '刷新失败'
+}
+```
 |
 
 ## 引用
@@ -41,10 +42,10 @@ VUE版:[查看](/dist/Mdropload.vue.js)
 Mdropload(document.querySelector('#touchObj'), {
         height: 50
         up: {
-            fn: function (success) {
+            fn: function (cb) {
                 console.log('触发了下拉操作');
                 setTimeout(function () {
-                    success();
+                    cb.success();
                 }, 1000);
             },
             template: {
@@ -56,8 +57,11 @@ Mdropload(document.querySelector('#touchObj'), {
             }
         },
         down: {
-            fn: function (success) {
+            fn: function (cb) {
                 console.log('触发了上拉操作');
+                cb.success();
+                // 重置操作
+                // cb.reset();
             },
             template: {
                 none: '上拉刷新',
@@ -100,10 +104,10 @@ export default {
       {
         height: 50,
         up: {
-          fn: function (success) {
+          fn: function (cb) {
             console.log('触发了下拉操作')
             setTimeout(function () {
-              success()
+              cb.success()
             }, 5000)
           },
           template: {
@@ -115,8 +119,9 @@ export default {
           }
         },
         down: {
-          fn: function (success) {
+          fn: function (cb) {
             console.log('触发了上拉操作')
+            cb.success();
           },
           template: {
             none: '上拉刷新',
