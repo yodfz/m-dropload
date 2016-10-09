@@ -13,8 +13,7 @@ _opt:
 |height|下拉多少PX进行刷新操作|
 |up|参考 fnopt|
 |down|参考 fnopt|
-|fnopt|{fn:下拉触发的方法, <br>
-            template:包含需要渲染的各种文字模版}|
+|fnopt|{fn:下拉触发的方法,template:包含需要渲染的各种文字模版}|
    
 > template结构   
 ```js
