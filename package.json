@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "rollup -c ./build/rollup.config.js",
+    "buildvue": "rollup -c ./build/rollup.config.vue.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

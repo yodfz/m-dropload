@@ -4,7 +4,7 @@
     (global.Mdropload = factory());
 }(this, (function () { 'use strict';
 
-var $utils = {
+var utils = {
     prefix: function () {
         var styles = window.getComputedStyle(document.documentElement, ''),
             pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || styles.OLink === '' && ['', 'o'])[1],
@@ -18,6 +18,13 @@ var $utils = {
     }(),
     css: function css(obj, key, value, closePrefix) {
         obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
+    },
+    elementCSS: function elementCSS(key, value) {
+        if (arguments.length === 2) {
+            utils.css(this, key, value);
+        } else {
+            return this.style[key];
+        }
     },
     mouseXY: function mouseXY(_e) {
         // 用于扩展JQ的触摸事件
@@ -43,6 +50,45 @@ var $utils = {
             parent.insertBefore(newNode, nowNode.nextSibling);
         }
     }
+};
+
+var css$1 = {
+    init: function init() {
+        // 初始化CSS样式
+        var createCss = document.createElement('style');
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        document.body.appendChild(createCss);
+    }
+};
+
+var callback = function callback() {
+    var that = this;
+    var fn = {
+        success: function success() {
+            if (!that.isLock && that.status.loading) {
+                fn.reset();
+                that.upObj.innerHTML = that.opt.up.template.success;
+                that.downObj.innerHTML = that.opt.down.template.success;
+            }
+        },
+        reset: function reset() {
+            that.status.loading = false;
+            that.obj.css('transform', 'translate3d(0,0,0)');
+            that.upObj.css('opacity', '0');
+        }
+    };
+    return fn;
+};
+
+var $hasTouch = "ontouchstart" in window;
+var eventStart = $hasTouch ? "touchstart" : "mousedown";
+var eventEnd = $hasTouch ? "touchend" : "mouseup";
+var eventMove = $hasTouch ? "touchmove" : "mousemove";
+var eventResize = $hasTouch ? "orientationchange" : "resize";
+var eventcancel = $hasTouch ? "touchcancel" : "mouseup";
+
+var touchEvent = {
+    eventStart: eventStart, eventEnd: eventEnd, eventMove: eventMove, eventResize: eventResize, eventcancel: eventcancel
 };
 
 var _d = document;
@@ -86,30 +132,22 @@ var scroll = {
     }
 };
 
-var $hasTouch = "ontouchstart" in window;
-var eventStart = $hasTouch ? "touchstart" : "mousedown";
-var eventEnd = $hasTouch ? "touchend" : "mouseup";
-var eventMove = $hasTouch ? "touchmove" : "mousemove";
-var eventResize = $hasTouch ? "orientationchange" : "resize";
-var eventcancel = $hasTouch ? "touchcancel" : "mouseup";
-
-var touchEvent = {
-    eventStart: eventStart, eventEnd: eventEnd, eventMove: eventMove, eventResize: eventResize, eventcancel: eventcancel
-};
-
 var $that = window;
 var $d = void 0;
 var $b = void 0;
 //$lock;
 var _$touch;
-var success = function success() {
-    var that = this;
-    if (!this.isLock && this.status.loading) {
-        this.status.loading = false;
-        this.obj.css('transform', 'translate3d(0,0,0)');
-        this.upObj.innerHTML = this.opt.up.template.success;
-    }
-};
+// 加载成功
+// let success = (function () {
+//    let that = this;
+//    if (!that.isLock && that.status.loading) {
+//        that.status.loading = false;
+//        that.obj.css('transform', 'translate3d(0,0,0)');
+//        that.upObj.css('opacity', '0');
+//        that.upObj.innerHTML = that.opt.up.template.success;
+//        that.downObj.innerHTML = that.opt.down.template.success;
+//    }
+// });
 
 _$touch = function $touch(element, _opt) {
     var $obj = null;
@@ -126,44 +164,66 @@ _$touch = function $touch(element, _opt) {
     that.obj = $obj;
     that.obj.css = function (key, value) {
         if (arguments.length === 2) {
-            $utils.css(this, key, value);
+            utils.css(this, key, value);
         } else {
             return this.style[key];
         }
     };
-    $obj.addEventListener(touchEvent.eventStart, function (e) {
+
+    // 事件缓存,以便销毁
+    function touchstart(e) {
         _$touch.start.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventEnd, function (e) {
+    }
+    function touchend(e) {
         _$touch.end.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventMove, function (e) {
+    }
+    function touchmove(e) {
         _$touch.move.call(that, e);
-    });
-    window.addEventListener(touchEvent.eventResize, function (e) {
+    }
+    function touchresize(e) {
         _$touch.resize.call(that, e);
-    });
-
-    $obj.addEventListener(touchEvent.eventcancel, function (e) {
+    }
+    function touchcancel(e) {
         _$touch.cancel.call(that, e);
-    });
-    $obj.addEventListener('transitionend', function (e) {
+    }
+    function transitionedn(e) {
         console.log('transitionend');
-    });
-    window.addEventListener('scroll', function (e) {
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
+    }
+    function eventscroll(e) {
+        // 已经在执行了，无需再次执行
+        if (that.status.loading) return;
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             console.log('go to bottom');
             // 到底
             that.status.loading = true;
-            that.opt.down.fn(success.bind(that));
+            that.opt.down.fn(callback.call(that));
         }
-    });
+    }
+    $obj.addEventListener(touchEvent.eventStart, touchstart);
+    $obj.addEventListener(touchEvent.eventEnd, touchend);
+    $obj.addEventListener(touchEvent.eventMove, touchmove);
+    window.addEventListener(touchEvent.eventResize, touchresize);
+    $obj.addEventListener(touchEvent.eventcancel, touchcancel);
+    $obj.addEventListener('transitionend', transitionedn);
+    window.addEventListener('scroll', eventscroll);
+    // 销毁
+    that.destroy = function () {
+        console.log('load destroy');
+        callback.call(that).reset();
+        $obj.removeEventListener(touchEvent.eventStart, touchstart);
+        $obj.removeEventListener(touchEvent.eventEnd, touchend);
+        $obj.removeEventListener(touchEvent.eventMove, touchmove);
+        $obj.removeEventListener(touchEvent.eventcancel, touchcancel);
+        $obj.removeEventListener('transitionend', transitionedn);
+        window.removeEventListener(touchEvent.eventResize, touchresize);
+        window.removeEventListener('scroll', eventscroll);
+        // 等待回收
+        // that = null;
+    };
     // 初始化CSS
-    $utils.css($obj, 'transform', 'translate3d(0,0,0)');
-    $utils.css($obj, 'position', 'relative', true);
-    $utils.css($obj, 'z-index', '20', true);
+    utils.css($obj, 'transform', 'translate3d(0,0,0)');
+    utils.css($obj, 'position', 'relative', true);
+    utils.css($obj, 'z-index', '20', true);
     that.initTemplate();
     that.status = {
         lock: false,
@@ -187,10 +247,13 @@ _$touch.prototype.initTemplate = function () {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.up.template.none;
         $div.className = 'js-mdropload-down';
-        $utils.insertAfter(this.obj, $div);
+        utils.insertAfter(this.obj, $div);
     }
     that.upObj = document.querySelector('.js-mdropload-up');
     that.downObj = document.querySelector('.js-mdropload-down');
+    //TODO: 此处需要优化
+    that.upObj.css = utils.elementCSS.bind(that.upObj);
+    that.downObj.css = utils.elementCSS.bind(that.downObj);
 };
 
 _$touch.start = function (e) {
@@ -203,13 +266,14 @@ _$touch.start = function (e) {
     this.status.lock = true;
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
-    this.startMouse = $utils.mouseXY(e);
+    this.startMouse = utils.mouseXY(e);
 };
 
 _$touch.end = function (e) {
     console.log('touch end');
     if (this.status.lock) {
-        this.endMouse = $utils.mouseXY(e);
+        e.stopPropagation();
+        this.endMouse = utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
         this.obj.css('transition-duration', '.5s');
         if (mouseY < this.opt.height) {
@@ -219,14 +283,14 @@ _$touch.end = function (e) {
         }
         // 操作完成之后的回调方法
         this.status.lock = false;
-        var _success = success.bind(this);
-
+        var _cb = callback.call(this);
+        // 查询是否到底部
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up.fn(_success);
+            this.opt.up.fn(_cb);
         } else {
-            _success();
+            _cb.success();
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
@@ -234,13 +298,17 @@ _$touch.end = function (e) {
 _$touch.move = function (e) {
     var that = this;
     if (that.status.lock) {
-        console.log('touch move');
-        e.preventDefault();
         if (scroll.getScrollTop() === 0) {
-            var mouse = $utils.mouseXY(e);
+            console.log('touch move');
+            e.preventDefault();
+            var mouse = utils.mouseXY(e);
             var mouseY = mouse.y - that.startMouse.y;
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                this.obj.css('transform', 'translate3d(0,' + (mouseY + that.offsetY) + 'px,0)');
+                var offset = mouseY + that.offsetY;
+                var opacity = (offset / that.opt.height).toFixed(2);
+                opacity = opacity > 1 ? 1 : opacity;
+                that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
+                that.upObj.css('opacity', opacity);
             }
             if (mouseY > that.opt.height) {
                 that.upObj.innerHTML = that.opt.up.template.message;
@@ -252,6 +320,16 @@ _$touch.resize = function (e) {};
 _$touch.cancel = function (e) {};
 
 var core = (function (_el, _opt) {
+    // 参数初始化
+    css$1.init();
+    // 如果_el传递进来是非ELEMENT 则进行转换
+    if (!(_el instanceof Element)) {
+        _el = document.querySelector(_el);
+    }
+    if (_el === null) {
+        throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
+    }
+    _el.classList.add('js-mdropload');
     return new _$touch(_el, _opt);
 });
 
