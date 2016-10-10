@@ -10,7 +10,6 @@ export default {
             transform: translateZ(0);
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-        
             -webkit-perspective: 1000;
             perspective: 1000;
         }
