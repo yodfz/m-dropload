@@ -15,6 +15,8 @@ let utils = {
         };
     })(),
     css: function (obj, key, value, closePrefix) {
+        // fixbug vivo and xiaomi
+        obj.style[key] = value;
         obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
     },
     elementCSS: function (key, value) {

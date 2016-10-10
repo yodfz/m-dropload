@@ -179,7 +179,6 @@ $touch.move = function (e) {
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY>0) {
-            console.log('touch move');
             e.preventDefault();
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
                 var offset = mouseY + that.offsetY;
