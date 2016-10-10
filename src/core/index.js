@@ -134,6 +134,7 @@ $touch.prototype.initTemplate = function () {
 };
 
 $touch.start = function (e) {
+    if(his.status.lock) return;
     console.log('touch start');
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
