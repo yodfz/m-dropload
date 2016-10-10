@@ -17,6 +17,8 @@ var utils = {
         };
     }(),
     css: function css(obj, key, value, closePrefix) {
+        // fixbug vivo and xiaomi
+        obj.style[key] = value;
         obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
     },
     elementCSS: function elementCSS(key, value) {
@@ -56,7 +58,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -217,8 +219,12 @@ _$touch = function $touch(element, _opt) {
         $obj.removeEventListener(touchEvent.eventMove, touchmove);
         $obj.removeEventListener(touchEvent.eventcancel, touchcancel);
         $obj.removeEventListener('transitionend', transitionedn);
+        $obj.classList.remove('js-mdropload');
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
+        // 节点回收
+        document.body.removeChild(that.upObj);
+        document.body.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
@@ -275,7 +281,6 @@ _$touch.start = function (e) {
 };
 
 _$touch.end = function (e) {
-    console.log('touch end');
     if (this.status.lock) {
         e.stopPropagation();
         this.endMouse = utils.mouseXY(e);
@@ -295,7 +300,6 @@ _$touch.end = function (e) {
             this.status.loading = true;
             this.opt.up.fn(_cb);
         } else {
-            console.log('reset');
             _cb.reset();
         }
     }
@@ -304,11 +308,11 @@ _$touch.end = function (e) {
 _$touch.move = function (e) {
     var that = this;
     if (that.status.lock) {
-        if (scroll.getScrollTop() === 0) {
-            console.log('touch move');
+        var mouse = utils.mouseXY(e);
+        var mouseY = mouse.y - that.startMouse.y;
+        // 解决与iScroll冲突问题
+        if (scroll.getScrollTop() === 0 && mouseY > 0) {
             e.preventDefault();
-            var mouse = utils.mouseXY(e);
-            var mouseY = mouse.y - that.startMouse.y;
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
                 var offset = mouseY + that.offsetY;
                 var opacity = (offset / that.opt.height).toFixed(2);

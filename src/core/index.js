@@ -88,8 +88,12 @@ $touch = function (element, _opt) {
         $obj.removeEventListener(touchEvent.eventMove, touchmove);
         $obj.removeEventListener(touchEvent.eventcancel, touchcancel);
         $obj.removeEventListener('transitionend', transitionedn);
+        $obj.classList.remove('js-mdropload');
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
+        // 节点回收
+        document.body.removeChild(that.upObj);
+        document.body.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
@@ -146,7 +150,6 @@ $touch.start = function (e) {
 };
 
 $touch.end = function (e) {
-    console.log('touch end');
     if (this.status.lock) {
         e.stopPropagation();
         this.endMouse = $utils.mouseXY(e);
@@ -166,7 +169,6 @@ $touch.end = function (e) {
             this.status.loading = true;
             this.opt.up.fn(_cb);
         } else {
-            console.log('reset');
             _cb.reset();
         }
     }
@@ -175,7 +177,7 @@ $touch.end = function (e) {
 $touch.move = function (e) {
     let that = this;
     if (that.status.lock) {
-        var mouse = utils.mouseXY(e);
+        var mouse = $utils.mouseXY(e);
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY>0) {
