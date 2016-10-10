@@ -6,6 +6,7 @@ export default {
         createCss.innerHTML = `
         .js-mdropload{
             z-index:1;
+            translate3d(0,0,0);
         }
         .js-mdropload-up {
             position: absolute;

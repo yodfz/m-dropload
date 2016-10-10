@@ -175,14 +175,15 @@ $touch.end = function (e) {
 $touch.move = function (e) {
     let that = this;
     if (that.status.lock) {
-        if (scroll.getScrollTop() === 0) {
+        var mouse = utils.mouseXY(e);
+        var mouseY = mouse.y - that.startMouse.y;
+        // 解决与iScroll冲突问题
+        if (scroll.getScrollTop() === 0 && mouseY>0) {
             console.log('touch move');
             e.preventDefault();
-            let mouse = $utils.mouseXY(e);
-            let mouseY = mouse.y - that.startMouse.y;
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                let offset = (mouseY + that.offsetY);
-                let opacity = (offset / that.opt.height).toFixed(2);
+                var offset = mouseY + that.offsetY;
+                var opacity = (offset / that.opt.height).toFixed(2);
                 opacity = opacity > 1 ? 1 : opacity;
                 that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
                 that.upObj.css('opacity', opacity);
