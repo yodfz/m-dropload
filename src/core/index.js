@@ -92,8 +92,8 @@ $touch = function (element, _opt) {
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
-        document.body.removeChild(that.upObj);
-        document.body.removeChild(that.downObj);
+        that.upObj&&document.body.removeChild(that.upObj);
+        that.downObj&&document.body.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
