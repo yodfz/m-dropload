@@ -2,11 +2,11 @@
 
 [更新说明](developmentTodoList.md)
 
-## 参数说明
+## 1. 参数说明
 ```js
 Mdropload(node,_opt);
 ```
-node:需要进行操作的节点
+node:需要进行操作的节点,可以直接传入`CSS3选择器`，或者`document.querySelect`选中的节点。
 
 _opt:
 
@@ -15,7 +15,7 @@ _opt:
 |height|下拉多少PX进行刷新操作|
 |up|参考 fnopt|
 |down|参考 fnopt|
-|fnopt|{fn:下拉触发的方法,template:包含需要渲染的各种文字模版}|
+|fnopt|{fn:下拉触发的方法 回调方法callback,template:包含需要渲染的各种文字模版}|
    
 > template结构   
 ```js
@@ -27,17 +27,29 @@ _opt:
     error: '刷新失败'
 }
 ```
-|
 
-## 引用
+
+fn回调函数 `callback`
+
++ success 如果刷新成功请回调
++ reset   刷新失败回调此方法用于复位下拉的各种操作
+
+Mdropload 返回方法
+
++ destroy 用于销毁整个Mdropload实例
+
+
+## 2. 引用
 普通版:[查看](/dist/MDropload.js)
+
 压缩版:[查看](/dist/MDropload.min.js)
+
 VUE版:[查看](/dist/Mdropload.vue.js)
 ```html
 <script src='src/Mdropload.js'></script>
 ```
 
-## 使用
+## 3. 使用
 
 ```js
 Mdropload(document.querySelector('#touchObj'), {
@@ -75,7 +87,7 @@ Mdropload(document.querySelector('#touchObj'), {
     });
 ```
 
-## vue使用
+## 4. vue使用
 
 ```
 npm install --save vue-dropload
@@ -84,9 +96,9 @@ npm install --save vue-dropload
 ### 在项目中引用
 
 ```js
-import vue-dropload from 'vue-dropload';
+import vuedropload from 'vue-dropload';
 import vue from 'vue';
-vue.use(vue-dropload);
+vue.use(vuedropload);
 ```
 
 ### 使用
@@ -139,7 +151,7 @@ export default {
 ```
 [前往DEMO](/example/vueDemo/src/App.vue)
 
-## 错误查询
+## 5. 错误查询
 
 1001:无法寻找到可设置的html节点,请确认后再次调用.
 

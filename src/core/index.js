@@ -137,6 +137,7 @@ $touch.prototype.initTemplate = function () {
 $touch.start = function (e) {
     if(his.status.lock) return;
     console.log('touch start');
+    e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
     if (isNaN(this.offsetY)) {
@@ -201,6 +202,8 @@ $touch.resize = function (e) {
 
 };
 $touch.cancel = function (e) {
+    // fixbug touchend可能异常不触发
+    callback.call(this).reset();
 };
 
 export default (_el, _opt)=> {
