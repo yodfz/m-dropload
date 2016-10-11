@@ -73,10 +73,10 @@ $touch = function (element, _opt) {
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= (scroll.getScrollHeight()-50)) {
             // 到底
             that.status.loading = true;
-            that.upObj.css('opacity', '1');
+            that.downObj.css('opacity', '1',false);
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
@@ -136,7 +136,7 @@ $touch.prototype.initTemplate = function () {
     // 初始化下部分
     if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
-        $div.innerHTML = this.opt.up.template.none;
+        $div.innerHTML = this.opt.down.template.none;
         $div.className = 'js-mdropload-down';
         $utils.insertAfter(this.obj, $div);
     }
@@ -159,6 +159,7 @@ $touch.start = function (e) {
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
     this.upObj.css('transition-duration', '0s');
+    this.downObj.css('opacity', '1');
     this.startMouse = $utils.mouseXY(e);
     // 再次初始化字符
     this.upObj.innerHTML = this.opt.up.template.none;
@@ -199,6 +200,7 @@ $touch.move = function (e) {
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY > 0) {
+            console.log('move');
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {

@@ -15,13 +15,17 @@ export default {
         }
         .js-mdropload-up {
             position: absolute;
-            height:30px;
-            line-height:30px;
-            width: 100%;
+        }
+        .js-mdropload-down{
+            transition-duration:.5s;
+            -webkit-transition-duration:.5s;
         }
         .js-mdropload-up,.js-mdropload-down{
             opacity:0;
             text-align: center;
+            height:30px;
+            line-height:30px;
+            width: 100%;
         }
         .js-mdropload-message {
             opacity:0;

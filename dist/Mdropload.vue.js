@@ -215,7 +215,7 @@ _$touch = function $touch(element, _opt) {
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             // 到底
             that.status.loading = true;
-            that.upObj.css('opacity', '1');
+            that.downObj.css('opacity', '1');
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }

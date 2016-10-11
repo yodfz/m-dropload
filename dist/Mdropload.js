@@ -67,7 +67,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            opacity:0;\n            text-align: center;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n        }\n        .js-mdropload-down{\n            transition-duration:.5s;\n            -webkit-transition-duration:.5s;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            opacity:0;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -212,10 +212,10 @@ _$touch = function $touch(element, _opt) {
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
             // 到底
             that.status.loading = true;
-            that.upObj.css('opacity', '1');
+            that.downObj.css('opacity', '1', false);
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
@@ -275,7 +275,7 @@ _$touch.prototype.initTemplate = function () {
     // 初始化下部分
     if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
-        $div.innerHTML = this.opt.up.template.none;
+        $div.innerHTML = this.opt.down.template.none;
         $div.className = 'js-mdropload-down';
         utils.insertAfter(this.obj, $div);
     }
@@ -298,6 +298,7 @@ _$touch.start = function (e) {
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
     this.upObj.css('transition-duration', '0s');
+    this.downObj.css('opacity', '1');
     this.startMouse = utils.mouseXY(e);
     // 再次初始化字符
     this.upObj.innerHTML = this.opt.up.template.none;
@@ -338,6 +339,7 @@ _$touch.move = function (e) {
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY > 0) {
+            console.log('move');
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {

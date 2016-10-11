@@ -21,10 +21,13 @@
         }
     </style>
 </head>
-<body>
-<div id="touchObj" CLASS="fs12" style="width:100%;height:8000px;background-color: #fbfbfb;text-align: center;font-size:60px;">
+<body style="overflow: scroll">
+<div id="touchObj" CLASS="fs12" style="width:100%;height:2400px;background-color: #ccc;text-align: center;font-size:60px;">
     移动我
     <button onclick="$dropload.destroy()">销毁dropload</button>
+    <div>
+        asdfajlsdfjkl
+    </div>
 </div>
 <script>
     var $dropload=Mdropload(document.querySelector('#touchObj'), {
@@ -47,7 +50,7 @@
         down: {
             fn: function (cb) {
                 console.log('触发了上拉操作');
-                cb.success();
+
             },
             template: {
                 none: '上拉刷新',
