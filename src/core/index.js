@@ -32,6 +32,7 @@ $touch = function (element, _opt) {
         $obj = element;
     }
     that.opt = _opt;
+    that.opt.animationTime = that.opt.animationTime || .5;
     that.opt.windowHeight = window.innerHeight / 5;
     that.obj = $obj;
     that.obj.css = function (key, value) {
