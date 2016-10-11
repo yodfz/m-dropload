@@ -2,11 +2,11 @@
 
 [更新说明](developmentTodoList.md)
 
-## 参数说明
+## 1. 参数说明
 ```js
 Mdropload(node,_opt);
 ```
-node:需要进行操作的节点
+node:需要进行操作的节点,可以直接传入`CSS3选择器`，或者`document.querySelect`选中的节点。
 
 _opt:
 
@@ -29,7 +29,7 @@ _opt:
 ```
 
 
-fn回调函数 callback
+fn回调函数 `callback`
 
 + success 如果刷新成功请回调
 + reset   刷新失败回调此方法用于复位下拉的各种操作
@@ -39,7 +39,7 @@ Mdropload 返回方法
 + destroy 用于销毁整个Mdropload实例
 
 
-## 引用
+## 2. 引用
 普通版:[查看](/dist/MDropload.js)
 
 压缩版:[查看](/dist/MDropload.min.js)
@@ -49,7 +49,7 @@ VUE版:[查看](/dist/Mdropload.vue.js)
 <script src='src/Mdropload.js'></script>
 ```
 
-## 使用
+## 3. 使用
 
 ```js
 Mdropload(document.querySelector('#touchObj'), {
@@ -87,7 +87,7 @@ Mdropload(document.querySelector('#touchObj'), {
     });
 ```
 
-## vue使用
+## 4. vue使用
 
 ```
 npm install --save vue-dropload
@@ -151,7 +151,7 @@ export default {
 ```
 [前往DEMO](/example/vueDemo/src/App.vue)
 
-## 错误查询
+## 5. 错误查询
 
 1001:无法寻找到可设置的html节点,请确认后再次调用.
 
