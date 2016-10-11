@@ -18,7 +18,6 @@ export default {
             height:30px;
             line-height:30px;
             width: 100%;
-            transition-duration: .5s;
         }
         .js-mdropload-up,.js-mdropload-down{
             opacity:0;

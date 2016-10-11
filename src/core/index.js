@@ -156,6 +156,7 @@ $touch.start = function (e) {
     this.status.lock = true;
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
+    this.upObj.css('transition-duration', '0s');
     this.startMouse = $utils.mouseXY(e);
     // 再次初始化字符
     this.upObj.innerHTML = this.opt.up.template.none;
@@ -173,6 +174,8 @@ $touch.end = function (e) {
         } else {
             this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         }
+        this.upObj.css('transform', 'translate3d(0,0,0)');
+        this.upObj.css('transition-duration', this.opt.animationTime +  's');
         // 操作完成之后的回调方法
         this.status.lock = false;
         var _cb = callback.call(this);
@@ -180,7 +183,7 @@ $touch.end = function (e) {
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up&&this.opt.up.fn(_cb);
+            this.opt.up && this.opt.up.fn(_cb);
         } else {
             _cb.reset();
         }
@@ -202,6 +205,9 @@ $touch.move = function (e) {
                 opacity = opacity > 1 ? 1 : opacity;
                 that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
                 that.upObj.css('opacity', opacity);
+                // 操作下拉提示框
+                let offsetUpobjHeight = (offset - that.opt.height) / 2;
+                that.upObj.css('transform', 'translate3d(0,' + (offsetUpobjHeight < 0 ? 0 : offsetUpobjHeight) + 'px,0)');
             }
             if (mouseY > that.opt.height) {
                 that.upObj.innerHTML = that.opt.up.template.message;
