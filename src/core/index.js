@@ -100,6 +100,8 @@ $touch = function (element, _opt) {
         }catch (err){
             console.warn(err);
         }
+        that.upObj&&that.obj.parentNode.removeChild(that.upObj);
+        that.downObj&&that.obj.parentNode.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
@@ -127,14 +129,14 @@ $touch.prototype.initTemplate = function () {
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!document.querySelector('.js-mdropload-down')) {
+    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.up.template.none;
         $div.className = 'js-mdropload-down';
         $utils.insertAfter(this.obj, $div);
     }
-    that.upObj = document.querySelector('.js-mdropload-up');
-    that.downObj = document.querySelector('.js-mdropload-down');
+    that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
+    that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
     that.upObj.css = $utils.elementCSS.bind(that.upObj);
     that.downObj.css = $utils.elementCSS.bind(that.downObj);
