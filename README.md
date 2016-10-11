@@ -15,7 +15,7 @@ _opt:
 |height|下拉多少PX进行刷新操作|
 |up|参考 fnopt|
 |down|参考 fnopt|
-|fnopt|{fn:下拉触发的方法,template:包含需要渲染的各种文字模版}|
+|fnopt|{fn:下拉触发的方法 回调方法callback,template:包含需要渲染的各种文字模版}|
    
 > template结构   
 ```js
@@ -27,11 +27,23 @@ _opt:
     error: '刷新失败'
 }
 ```
-|
+
+
+fn回调函数 callback
+
++ success 如果刷新成功请回调
++ reset   刷新失败回调此方法用于复位下拉的各种操作
+
+Mdropload 返回方法
+
++ destroy 用于销毁整个Mdropload实例
+
 
 ## 引用
 普通版:[查看](/dist/MDropload.js)
+
 压缩版:[查看](/dist/MDropload.min.js)
+
 VUE版:[查看](/dist/Mdropload.vue.js)
 ```html
 <script src='src/Mdropload.js'></script>
@@ -84,9 +96,9 @@ npm install --save vue-dropload
 ### 在项目中引用
 
 ```js
-import vue-dropload from 'vue-dropload';
+import vuedropload from 'vue-dropload';
 import vue from 'vue';
-vue.use(vue-dropload);
+vue.use(vuedropload);
 ```
 
 ### 使用
