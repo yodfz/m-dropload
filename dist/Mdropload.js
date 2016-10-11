@@ -276,7 +276,7 @@ _$touch.prototype.initTemplate = function () {
 };
 
 _$touch.start = function (e) {
-    if (his.status.lock) return;
+    if (this.status.lock) return;
     console.log('touch start');
     e.preventDefault();
     // 取当前transform高度

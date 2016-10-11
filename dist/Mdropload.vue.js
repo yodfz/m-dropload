@@ -16,10 +16,19 @@ var utils = {
             js: pre[0].toUpperCase() + pre.substr(1)
         };
     }(),
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param value
+     * @param closePrefix 是否关闭前缀
+     */
     css: function css(obj, key, value, closePrefix) {
         // fixbug vivo and xiaomi
         obj.style[key] = value;
-        obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
+        if (!closePrefix) {
+            obj.style[this.prefix.css + key] = value;
+        }
     },
     elementCSS: function elementCSS(key, value) {
         if (arguments.length === 2) {
@@ -58,7 +67,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .2s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .5s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -164,6 +173,7 @@ _$touch = function $touch(element, _opt) {
         $obj = element;
     }
     that.opt = _opt;
+    that.opt.animationTime = that.opt.animationTime || .5;
     that.opt.windowHeight = window.innerHeight / 5;
     that.obj = $obj;
     that.obj.css = function (key, value) {
@@ -223,8 +233,8 @@ _$touch = function $touch(element, _opt) {
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
-        document.body.removeChild(that.upObj);
-        document.body.removeChild(that.downObj);
+        that.upObj && document.body.removeChild(that.upObj);
+        that.downObj && document.body.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
@@ -232,6 +242,7 @@ _$touch = function $touch(element, _opt) {
     utils.css($obj, 'transform', 'translate3d(0,0,0)');
     utils.css($obj, 'position', 'relative', true);
     utils.css($obj, 'z-index', '20', true);
+    utils.css($obj, 'transition-duration', that.opt.animationTime);
     that.initTemplate();
     that.status = {
         lock: false,
@@ -265,7 +276,9 @@ _$touch.prototype.initTemplate = function () {
 };
 
 _$touch.start = function (e) {
+    if (this.status.lock) return;
     console.log('touch start');
+    e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
     if (isNaN(this.offsetY)) {
@@ -327,7 +340,10 @@ _$touch.move = function (e) {
     }
 };
 _$touch.resize = function (e) {};
-_$touch.cancel = function (e) {};
+_$touch.cancel = function (e) {
+    // fixbug touchend可能异常不触发
+    callback.call(this).reset();
+};
 
 var core = (function (_el, _opt) {
     // 参数初始化
