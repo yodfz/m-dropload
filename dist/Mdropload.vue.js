@@ -67,7 +67,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n            opacity:0;\n            transition-duration: .5s;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            opacity:0;\n            text-align: center;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -84,10 +84,10 @@ var callback = function callback() {
             }
         },
         reset: function reset() {
-            console.log('reset');
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
+            that.downObj.css('opacity', '0');
         }
     };
     return fn;
@@ -175,7 +175,8 @@ _$touch = function $touch(element, _opt) {
     that.opt = _opt;
     // 动画时长
     that.opt.animationTime = that.opt.animationTime || .5;
-    that.opt.windowHeight = window.innerHeight / 5;
+    // 最大可拉取步长
+    that.opt.windowHeight = window.innerHeight;
     that.obj = $obj;
     that.obj.css = function (key, value) {
         if (arguments.length === 2) {
@@ -189,31 +190,36 @@ _$touch = function $touch(element, _opt) {
     function touchstart(e) {
         _$touch.start.call(that, e);
     }
+
     function touchend(e) {
         _$touch.end.call(that, e);
     }
+
     function touchmove(e) {
         _$touch.move.call(that, e);
     }
+
     function touchresize(e) {
         _$touch.resize.call(that, e);
     }
+
     function touchcancel(e) {
         _$touch.cancel.call(that, e);
     }
-    function transitionedn(e) {
-        console.log('transitionend');
-    }
+
+    function transitionedn(e) {}
+
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
-            console.log('go to bottom');
             // 到底
             that.status.loading = true;
-            that.opt.down.fn(callback.call(that));
+            that.upObj.css('opacity', '1');
+            that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
+
     $obj.addEventListener(touchEvent.eventStart, touchstart);
     $obj.addEventListener(touchEvent.eventEnd, touchend);
     $obj.addEventListener(touchEvent.eventMove, touchmove);
@@ -223,7 +229,6 @@ _$touch = function $touch(element, _opt) {
     window.addEventListener('scroll', eventscroll);
     // 销毁
     that.destroy = function () {
-        console.log('load destroy');
         callback.call(that).reset();
         $obj.removeEventListener(touchEvent.eventStart, touchstart);
         $obj.removeEventListener(touchEvent.eventEnd, touchend);
@@ -283,7 +288,6 @@ _$touch.prototype.initTemplate = function () {
 
 _$touch.start = function (e) {
     if (this.status.lock) return;
-    console.log('touch start');
     // e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
@@ -293,6 +297,7 @@ _$touch.start = function (e) {
     this.status.lock = true;
     this.status.loading = false;
     this.obj.css('transition-duration', '0s');
+    this.upObj.css('transition-duration', '0s');
     this.startMouse = utils.mouseXY(e);
     // 再次初始化字符
     this.upObj.innerHTML = this.opt.up.template.none;
@@ -310,6 +315,8 @@ _$touch.end = function (e) {
         } else {
             this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         }
+        this.upObj.css('transform', 'translate3d(0,0,0)');
+        this.upObj.css('transition-duration', this.opt.animationTime + 's');
         // 操作完成之后的回调方法
         this.status.lock = false;
         var _cb = callback.call(this);
@@ -317,7 +324,7 @@ _$touch.end = function (e) {
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up.fn(_cb);
+            this.opt.up && this.opt.up.fn(_cb);
         } else {
             _cb.reset();
         }
@@ -334,11 +341,14 @@ _$touch.move = function (e) {
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                var offset = mouseY + that.offsetY;
+                var offset = (mouseY + that.offsetY) / 2;
                 var opacity = (offset / that.opt.height).toFixed(2);
                 opacity = opacity > 1 ? 1 : opacity;
                 that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
                 that.upObj.css('opacity', opacity);
+                // 操作下拉提示框
+                var offsetUpobjHeight = (offset - that.opt.height) / 2;
+                that.upObj.css('transform', 'translate3d(0,' + (offsetUpobjHeight < 0 ? 0 : offsetUpobjHeight) + 'px,0)');
             }
             if (mouseY > that.opt.height) {
                 that.upObj.innerHTML = that.opt.up.template.message;
