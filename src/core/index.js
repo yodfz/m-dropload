@@ -93,8 +93,8 @@ $touch = function (element, _opt) {
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
-        that.upObj&&document.body.removeChild(that.upObj);
-        that.downObj&&document.body.removeChild(that.downObj);
+        that.upObj&&that.obj.parentNode.removeChild(that.upObj);
+        that.downObj&&that.obj.parentNode.removeChild(that.downObj);
         // 等待回收
         // that = null;
     };
@@ -115,21 +115,21 @@ $touch.prototype.initTemplate = function () {
     // 初始化上部分
     var $div;
     let that = this;
-    if (!document.querySelector('.js-mdropload-up')) {
+    if (!this.obj.parentNode.querySelector('.js-mdropload-up')) {
         $div = document.createElement('div');
         $div.innerHTML = that.opt.up.template.none;
         $div.className = 'js-mdropload-up';
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!document.querySelector('.js-mdropload-down')) {
+    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.up.template.none;
         $div.className = 'js-mdropload-down';
         $utils.insertAfter(this.obj, $div);
     }
-    that.upObj = document.querySelector('.js-mdropload-up');
-    that.downObj = document.querySelector('.js-mdropload-down');
+    that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
+    that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
     that.upObj.css = $utils.elementCSS.bind(that.upObj);
     that.downObj.css = $utils.elementCSS.bind(that.downObj);
