@@ -175,7 +175,8 @@ _$touch = function $touch(element, _opt) {
     that.opt = _opt;
     // 动画时长
     that.opt.animationTime = that.opt.animationTime || .5;
-    that.opt.windowHeight = window.innerHeight / 5;
+    // 最大可拉取步长
+    that.opt.windowHeight = window.innerHeight;
     that.obj = $obj;
     that.obj.css = function (key, value) {
         if (arguments.length === 2) {
@@ -339,7 +340,7 @@ _$touch.move = function (e) {
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                var offset = mouseY + that.offsetY;
+                var offset = (mouseY + that.offsetY) / 2;
                 var opacity = (offset / that.opt.height).toFixed(2);
                 opacity = opacity > 1 ? 1 : opacity;
                 that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
