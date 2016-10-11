@@ -14,10 +14,19 @@ let utils = {
             js: pre[0].toUpperCase() + pre.substr(1)
         };
     })(),
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param value
+     * @param closePrefix 是否关闭前缀
+     */
     css: function (obj, key, value, closePrefix) {
         // fixbug vivo and xiaomi
         obj.style[key] = value;
-        obj.style[(closePrefix ? '' : this.prefix.css) + key] = value;
+        if (!closePrefix) {
+            obj.style[this.prefix.css + key] = value;
+        }
     },
     elementCSS: function (key, value) {
         if (arguments.length === 2) {

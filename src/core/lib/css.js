@@ -20,7 +20,7 @@ export default {
             line-height:30px;
             width: 100%;
             opacity:0;
-            transition-duration: .2s;
+            transition-duration: .5s;
         }
         .js-mdropload-message {
             opacity:0;

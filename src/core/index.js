@@ -102,6 +102,7 @@ $touch = function (element, _opt) {
     $utils.css($obj, 'transform', 'translate3d(0,0,0)');
     $utils.css($obj, 'position', 'relative', true);
     $utils.css($obj, 'z-index', '20', true);
+    $utils.css($obj, 'transition-duration', that.opt.animationTime);
     that.initTemplate();
     that.status = {
         lock: false,

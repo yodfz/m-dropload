@@ -7,7 +7,7 @@
     "example": "example"
   },
   "scripts": {
-    "build": "rollup -c ./build/rollup.config.js",
+    "build": "sh ./build/package.sh",
     "buildvue": "rollup -c ./build/rollup.config.vue.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
