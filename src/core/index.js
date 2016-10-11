@@ -95,13 +95,12 @@ $touch = function (element, _opt) {
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
         try{
-            that.upObj&&document.body.removeChild(that.upObj);
-            that.downObj&&document.body.removeChild(that.downObj);
+            that.upObj&&that.obj.parentNode.removeChild(that.upObj);
+            that.downObj&&that.obj.parentNode.removeChild(that.downObj);
         }catch (err){
             console.warn(err);
         }
-        that.upObj&&that.obj.parentNode.removeChild(that.upObj);
-        that.downObj&&that.obj.parentNode.removeChild(that.downObj);
+
         // 等待回收
         // that = null;
     };
@@ -145,7 +144,7 @@ $touch.prototype.initTemplate = function () {
 $touch.start = function (e) {
     if(this.status.lock) return;
     console.log('touch start');
-    e.preventDefault();
+    // e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
     if (isNaN(this.offsetY)) {
