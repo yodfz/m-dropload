@@ -173,6 +173,7 @@ _$touch = function $touch(element, _opt) {
         $obj = element;
     }
     that.opt = _opt;
+    // 动画时长
     that.opt.animationTime = that.opt.animationTime || .5;
     that.opt.windowHeight = window.innerHeight / 5;
     that.obj = $obj;
@@ -233,8 +234,13 @@ _$touch = function $touch(element, _opt) {
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
-        that.upObj && document.body.removeChild(that.upObj);
-        that.downObj && document.body.removeChild(that.downObj);
+        try {
+            that.upObj && that.obj.parentNode.removeChild(that.upObj);
+            that.downObj && that.obj.parentNode.removeChild(that.downObj);
+        } catch (err) {
+            console.warn(err);
+        }
+
         // 等待回收
         // that = null;
     };
@@ -262,14 +268,14 @@ _$touch.prototype.initTemplate = function () {
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!document.querySelector('.js-mdropload-down')) {
+    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.up.template.none;
         $div.className = 'js-mdropload-down';
         utils.insertAfter(this.obj, $div);
     }
-    that.upObj = document.querySelector('.js-mdropload-up');
-    that.downObj = document.querySelector('.js-mdropload-down');
+    that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
+    that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
     that.upObj.css = utils.elementCSS.bind(that.upObj);
     that.downObj.css = utils.elementCSS.bind(that.downObj);
@@ -278,7 +284,7 @@ _$touch.prototype.initTemplate = function () {
 _$touch.start = function (e) {
     if (this.status.lock) return;
     console.log('touch start');
-    e.preventDefault();
+    // e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
     if (isNaN(this.offsetY)) {
@@ -326,6 +332,7 @@ _$touch.move = function (e) {
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY > 0) {
             e.preventDefault();
+            // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
                 var offset = mouseY + that.offsetY;
                 var opacity = (offset / that.opt.height).toFixed(2);

@@ -62,13 +62,11 @@ $touch = function (element, _opt) {
         $touch.cancel.call(that, e);
     }
     function transitionedn(e) {
-        console.log('transitionend');
     }
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
-            console.log('go to bottom');
             // 到底
             that.status.loading = true;
             that.opt.down.fn(callback.call(that));
@@ -83,7 +81,6 @@ $touch = function (element, _opt) {
     window.addEventListener('scroll', eventscroll);
     // 销毁
     that.destroy = function () {
-        console.log('load destroy');
         callback.call(that).reset();
         $obj.removeEventListener(touchEvent.eventStart, touchstart);
         $obj.removeEventListener(touchEvent.eventEnd, touchend);
@@ -143,7 +140,6 @@ $touch.prototype.initTemplate = function () {
 
 $touch.start = function (e) {
     if(this.status.lock) return;
-    console.log('touch start');
     // e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
