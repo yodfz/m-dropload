@@ -36,10 +36,10 @@ export default {
       {
         height: 50,
         up: {
-          fn: function (success) {
+          fn: function (cb) {
             console.log('触发了下拉操作')
             setTimeout(function () {
-              success()
+              cb.success()
             }, 5000)
           },
           template: {
@@ -51,8 +51,9 @@ export default {
           }
         },
         down: {
-          fn: function (success) {
+          fn: function (cb) {
             console.log('触发了上拉操作')
+            cb.success()
           },
           template: {
             none: '上拉刷新',
@@ -74,15 +75,16 @@ html {
 }
 
 body {
-  display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
 }
+.js-mdropload-down{
+  text-align: center;
+}
 
 #app {
   color: #2c3e50;
-  margin-top: -100px;
   max-width: 600px;
   font-family: Source Sans Pro, Helvetica, sans-serif;
   text-align: center;

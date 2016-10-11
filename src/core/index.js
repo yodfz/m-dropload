@@ -46,32 +46,39 @@ $touch = function (element, _opt) {
 
 
     // 事件缓存,以便销毁
-    function touchstart (e) {
+    function touchstart(e) {
         $touch.start.call(that, e);
     }
+
     function touchend(e) {
         $touch.end.call(that, e);
     }
+
     function touchmove(e) {
         $touch.move.call(that, e);
     }
+
     function touchresize(e) {
         $touch.resize.call(that, e);
     }
+
     function touchcancel(e) {
         $touch.cancel.call(that, e);
     }
+
     function transitionedn(e) {
     }
+
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight()) {
             // 到底
             that.status.loading = true;
-            that.opt.down.fn(callback.call(that));
+            that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
+
     $obj.addEventListener(touchEvent.eventStart, touchstart);
     $obj.addEventListener(touchEvent.eventEnd, touchend);
     $obj.addEventListener(touchEvent.eventMove, touchmove);
@@ -91,10 +98,10 @@ $touch = function (element, _opt) {
         window.removeEventListener(touchEvent.eventResize, touchresize);
         window.removeEventListener('scroll', eventscroll);
         // 节点回收
-        try{
-            that.upObj&&that.obj.parentNode.removeChild(that.upObj);
-            that.downObj&&that.obj.parentNode.removeChild(that.downObj);
-        }catch (err){
+        try {
+            that.upObj && that.obj.parentNode.removeChild(that.upObj);
+            that.downObj && that.obj.parentNode.removeChild(that.downObj);
+        } catch (err) {
             console.warn(err);
         }
 
@@ -139,7 +146,7 @@ $touch.prototype.initTemplate = function () {
 };
 
 $touch.start = function (e) {
-    if(this.status.lock) return;
+    if (this.status.lock) return;
     // e.preventDefault();
     // 取当前transform高度
     this.offsetY = this.obj.css('transform').split(',')[1].replace('px', '').trim() * 1;
@@ -173,7 +180,7 @@ $touch.end = function (e) {
         if (mouseY > this.opt.height) {
             this.upObj.innerHTML = this.opt.up.template.loading;
             this.status.loading = true;
-            this.opt.up.fn(_cb);
+            this.opt.up&&this.opt.up.fn(_cb);
         } else {
             _cb.reset();
         }
@@ -186,7 +193,7 @@ $touch.move = function (e) {
         var mouse = $utils.mouseXY(e);
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
-        if (scroll.getScrollTop() === 0 && mouseY>0) {
+        if (scroll.getScrollTop() === 0 && mouseY > 0) {
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {

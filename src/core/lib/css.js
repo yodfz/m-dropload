@@ -15,7 +15,6 @@ export default {
         }
         .js-mdropload-up {
             position: absolute;
-            text-align: center;
             height:30px;
             line-height:30px;
             width: 100%;
@@ -23,6 +22,7 @@ export default {
         }
         .js-mdropload-up,.js-mdropload-down{
             opacity:0;
+            text-align: center;
         }
         .js-mdropload-message {
             opacity:0;

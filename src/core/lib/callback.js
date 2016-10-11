@@ -10,10 +10,10 @@ let callback = function () {
             }
         },
         reset () {
-            console.log('reset');
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
+            that.downObj.css('opacity', '0');
         }
     };
     return fn;
