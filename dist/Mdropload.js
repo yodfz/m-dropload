@@ -90,6 +90,12 @@ var callback = function callback() {
             if (mouseY > 0) {
                 that.downObj.css('opacity', '0');
             }
+        },
+
+        // 提供给底部加载下一页使用
+        end: function end() {
+            that.downObj.innerHTML = that.opt.down.template.end;
+            fn.reset();
         }
     };
     return fn;
