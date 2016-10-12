@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-point="2">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../dist/MDropload.js"></script>
+    <style>
+        .js-mdropload-up {
+            position: absolute;
+            text-align: center;
+            width: 100%;
+        }
+        .js-mdropload-up {
+            font-size: 30px;
+        }
+        [data-point='1'] .fs12{
+            font-size:12px;
+                       }
+        [data-point='2'] .fs12{
+            font-size:24px;
+        }
+    </style>
+</head>
+<body style="overflow: scroll">
+<div id="touchObj" CLASS="fs12" style="width:100%;height:2400px;background-color: #ccc;text-align: center;font-size:60px;">
+    滚动到底部,不会触发down事件,因为没有注册这个事件
+</div>
+<script>
+    var $dropload=Mdropload(document.querySelector('#touchObj'), {
+        height: 50,
+        up: {
+            fn: function (cb) {
+                console.log('触发了下拉操作');
+                setTimeout(function () {
+                    cb.success();
+                }, 2000);
+            },
+            template: {
+                none: '下拉刷新',
+                message: '释放更新',
+                loading: '正在更新，请稍后',
+                success: '刷新成功',
+                error: '刷新失败'
+            }
+        }
+    });
+</script>
+</body>
+</html>

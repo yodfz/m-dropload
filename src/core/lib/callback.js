@@ -3,10 +3,13 @@ let callback = function () {
     let fn = {
         success () {
             if (!that.isLock && that.status.loading) {
-                console.log('success');
                 fn.reset();
-                that.upObj.innerHTML = that.opt.up.template.success;
-                that.downObj.innerHTML = that.opt.down.template.success;
+                if (that.opt.up.template.success) {
+                    that.upObj.innerHTML = that.opt.up.template.success;
+                }
+                if (that.opt.down.template.success) {
+                    that.downObj.innerHTML = that.opt.up.template.success;
+                }
             }
         },
         reset (mouseY) {

@@ -7,19 +7,7 @@ import scroll from './lib/scroll';
 let $that = window,
     $d,
     $b;
-//$lock;
 var $touch;
-// 加载成功
-// let success = (function () {
-//    let that = this;
-//    if (!that.isLock && that.status.loading) {
-//        that.status.loading = false;
-//        that.obj.css('transform', 'translate3d(0,0,0)');
-//        that.upObj.css('opacity', '0');
-//        that.upObj.innerHTML = that.opt.up.template.success;
-//        that.downObj.innerHTML = that.opt.down.template.success;
-//    }
-// });
 
 $touch = function (element, _opt) {
     let $obj = null;
@@ -44,8 +32,13 @@ $touch = function (element, _opt) {
             return this.style[key];
         }
     };
-
-
+    // 判断是否需要对未注册方法进行屏蔽
+    if (!that.opt.up) {
+        that.opt.up = {isNull:true,template: {},fn:()=>{}};
+    }
+    if (!that.opt.down) {
+        that.opt.down = {isNull:true,template: {},fn:()=>{}};
+    }
     // 事件缓存,以便销毁
     function touchstart(e) {
         $touch.start.call(that, e);
@@ -74,7 +67,7 @@ $touch = function (element, _opt) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= (scroll.getScrollHeight() - 50)) {
-            // 到底
+            // bottom event
             that.status.loading = true;
             that.downObj.css('opacity', '1', false);
             that.downObj.innerHTML = that.opt.down.template.loading;
@@ -128,14 +121,14 @@ $touch.prototype.initTemplate = function () {
     // 初始化上部分
     var $div;
     let that = this;
-    if (!document.querySelector('.js-mdropload-up')) {
+    if (!that.opt.up.isNull && !document.querySelector('.js-mdropload-up')) {
         $div = document.createElement('div');
         $div.innerHTML = that.opt.up.template.none;
         $div.className = 'js-mdropload-up';
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
+    if (!this.opt.down.isNull && !this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.down.template.none;
         $div.className = 'js-mdropload-down';
@@ -144,8 +137,21 @@ $touch.prototype.initTemplate = function () {
     that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
     that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
-    that.upObj.css = $utils.elementCSS.bind(that.upObj);
-    that.downObj.css = $utils.elementCSS.bind(that.downObj);
+    if (that.upObj) {
+        that.upObj.css = $utils.elementCSS.bind(that.upObj);
+    } else {
+        that.upObj = {};
+        that.upObj.css = function () {
+        };
+    }
+
+    if (that.downObj) {
+        that.downObj.css = $utils.elementCSS.bind(that.downObj);
+    } else {
+        that.downObj = {};
+        that.downObj.css = function () {
+        };
+    }
 };
 
 $touch.start = function (e) {

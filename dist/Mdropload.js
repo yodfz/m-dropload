@@ -77,10 +77,13 @@ var callback = function callback() {
     var fn = {
         success: function success() {
             if (!that.isLock && that.status.loading) {
-                console.log('success');
                 fn.reset();
-                that.upObj.innerHTML = that.opt.up.template.success;
-                that.downObj.innerHTML = that.opt.down.template.success;
+                if (that.opt.up.template.success) {
+                    that.upObj.innerHTML = that.opt.up.template.success;
+                }
+                if (that.opt.down.template.success) {
+                    that.downObj.innerHTML = that.opt.up.template.success;
+                }
             }
         },
         reset: function reset(mouseY) {
@@ -156,19 +159,7 @@ var scroll = {
 var $that = window;
 var $d = void 0;
 var $b = void 0;
-//$lock;
 var _$touch;
-// 加载成功
-// let success = (function () {
-//    let that = this;
-//    if (!that.isLock && that.status.loading) {
-//        that.status.loading = false;
-//        that.obj.css('transform', 'translate3d(0,0,0)');
-//        that.upObj.css('opacity', '0');
-//        that.upObj.innerHTML = that.opt.up.template.success;
-//        that.downObj.innerHTML = that.opt.down.template.success;
-//    }
-// });
 
 _$touch = function $touch(element, _opt) {
     var $obj = null;
@@ -193,7 +184,13 @@ _$touch = function $touch(element, _opt) {
             return this.style[key];
         }
     };
-
+    // 判断是否需要对未注册方法进行屏蔽
+    if (!that.opt.up) {
+        that.opt.up = { isNull: true, template: {}, fn: function fn() {} };
+    }
+    if (!that.opt.down) {
+        that.opt.down = { isNull: true, template: {}, fn: function fn() {} };
+    }
     // 事件缓存,以便销毁
     function touchstart(e) {
         _$touch.start.call(that, e);
@@ -221,7 +218,7 @@ _$touch = function $touch(element, _opt) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
-            // 到底
+            // bottom event
             that.status.loading = true;
             that.downObj.css('opacity', '1', false);
             that.downObj.innerHTML = that.opt.down.template.loading;
@@ -275,14 +272,14 @@ _$touch.prototype.initTemplate = function () {
     // 初始化上部分
     var $div;
     var that = this;
-    if (!document.querySelector('.js-mdropload-up')) {
+    if (!that.opt.up.isNull && !document.querySelector('.js-mdropload-up')) {
         $div = document.createElement('div');
         $div.innerHTML = that.opt.up.template.none;
         $div.className = 'js-mdropload-up';
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
+    if (!this.opt.down.isNull && !this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.down.template.none;
         $div.className = 'js-mdropload-down';
@@ -291,8 +288,19 @@ _$touch.prototype.initTemplate = function () {
     that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
     that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
-    that.upObj.css = utils.elementCSS.bind(that.upObj);
-    that.downObj.css = utils.elementCSS.bind(that.downObj);
+    if (that.upObj) {
+        that.upObj.css = utils.elementCSS.bind(that.upObj);
+    } else {
+        that.upObj = {};
+        that.upObj.css = function () {};
+    }
+
+    if (that.downObj) {
+        that.downObj.css = utils.elementCSS.bind(that.downObj);
+    } else {
+        that.downObj = {};
+        that.downObj.css = function () {};
+    }
 };
 
 _$touch.start = function (e) {
