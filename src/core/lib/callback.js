@@ -13,7 +13,7 @@ let callback = function () {
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
-            if (mouseY <= 0) {
+            if (mouseY > 0) {
                 that.downObj.css('opacity', '0');
             }
         }

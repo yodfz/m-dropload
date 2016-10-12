@@ -67,7 +67,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n        }\n        .js-mdropload-down{\n            transition-duration:.5s;\n            -webkit-transition-duration:.5s;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            opacity:0;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n        }\n        .js-mdropload-down{\n            transition-duration:.5s;\n            -webkit-transition-duration:.5s;\n        }\n        .js-mdropload-up{\n            opacity:0;\n            min-height:30px;\n        }\n        .js-mdropload-down{\n            height:100px;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            text-align: center;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -87,7 +87,7 @@ var callback = function callback() {
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
-            if (mouseY <= 0) {
+            if (mouseY > 0) {
                 that.downObj.css('opacity', '0');
             }
         }

@@ -20,10 +20,15 @@ export default {
             transition-duration:.5s;
             -webkit-transition-duration:.5s;
         }
-        .js-mdropload-up,.js-mdropload-down{
+        .js-mdropload-up{
             opacity:0;
+            min-height:30px;
+        }
+        .js-mdropload-down{
+            height:100px;
+        }
+        .js-mdropload-up,.js-mdropload-down{
             text-align: center;
-            height:30px;
             line-height:30px;
             width: 100%;
         }
