@@ -332,6 +332,9 @@ _$touch.end = function (e) {
         } else {
             _cb.reset(mouseY);
         }
+        if (mouseY <= 0) {
+            this.downObj.innerHTML = this.opt.down.template.loading;
+        }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
 };

@@ -73,10 +73,10 @@ $touch = function (element, _opt) {
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= (scroll.getScrollHeight()-50)) {
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= (scroll.getScrollHeight() - 50)) {
             // 到底
             that.status.loading = true;
-            that.downObj.css('opacity', '1',false);
+            that.downObj.css('opacity', '1', false);
             that.downObj.innerHTML = that.opt.down.template.loading;
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
@@ -179,7 +179,7 @@ $touch.end = function (e) {
             this.obj.css('transform', 'translate3d(0,' + this.opt.height + 'px,0)');
         }
         this.upObj.css('transform', 'translate3d(0,0,0)');
-        this.upObj.css('transition-duration', this.opt.animationTime +  's');
+        this.upObj.css('transition-duration', this.opt.animationTime + 's');
         // 操作完成之后的回调方法
         this.status.lock = false;
         var _cb = callback.call(this);
@@ -190,6 +190,9 @@ $touch.end = function (e) {
             this.opt.up && this.opt.up.fn(_cb);
         } else {
             _cb.reset(mouseY);
+        }
+        if (mouseY <= 0) {
+            this.downObj.innerHTML = this.opt.down.template.loading;
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
@@ -205,7 +208,7 @@ $touch.move = function (e) {
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                var offset = (mouseY + that.offsetY)/2;
+                var offset = (mouseY + that.offsetY) / 2;
                 var opacity = (offset / that.opt.height).toFixed(2);
                 opacity = opacity > 1 ? 1 : opacity;
                 that.obj.css('transform', 'translate3d(0,' + offset + 'px,0)');
