@@ -25,7 +25,8 @@ export default {
             min-height:30px;
         }
         .js-mdropload-down{
-            height:100px;
+            height:60px;
+            line-height:60px;
         }
         .js-mdropload-up,.js-mdropload-down{
             text-align: center;
