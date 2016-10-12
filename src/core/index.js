@@ -77,6 +77,7 @@ $touch = function (element, _opt) {
             // 到底
             that.status.loading = true;
             that.downObj.css('opacity', '1',false);
+            that.downObj.innerHTML = that.opt.down.template.loading;
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
@@ -188,7 +189,7 @@ $touch.end = function (e) {
             this.status.loading = true;
             this.opt.up && this.opt.up.fn(_cb);
         } else {
-            _cb.reset();
+            _cb.reset(mouseY);
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;

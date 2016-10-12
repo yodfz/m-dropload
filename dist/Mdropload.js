@@ -83,11 +83,13 @@ var callback = function callback() {
                 that.downObj.innerHTML = that.opt.down.template.success;
             }
         },
-        reset: function reset() {
+        reset: function reset(mouseY) {
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
-            that.downObj.css('opacity', '0');
+            if (mouseY <= 0) {
+                that.downObj.css('opacity', '0');
+            }
         }
     };
     return fn;
@@ -216,6 +218,7 @@ _$touch = function $touch(element, _opt) {
             // 到底
             that.status.loading = true;
             that.downObj.css('opacity', '1', false);
+            that.downObj.innerHTML = that.opt.down.template.loading;
             that.opt.down && that.opt.down.fn(callback.call(that));
         }
     }
@@ -327,7 +330,7 @@ _$touch.end = function (e) {
             this.status.loading = true;
             this.opt.up && this.opt.up.fn(_cb);
         } else {
-            _cb.reset();
+            _cb.reset(mouseY);
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
