@@ -67,7 +67,7 @@ var css$1 = {
     init: function init() {
         // 初始化CSS样式
         var createCss = document.createElement('style');
-        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n        }\n        .js-mdropload-down{\n            transition-duration:.5s;\n            -webkit-transition-duration:.5s;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            opacity:0;\n            text-align: center;\n            height:30px;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
+        createCss.innerHTML = '\n        .js-mdropload{\n            z-index:1;\n            -webkit-transform: translateZ(0);   \n            transform: translateZ(0);\n            -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n            -webkit-perspective: 1000;\n            perspective: 1000;\n        }\n        .js-mdropload-up {\n            position: absolute;\n        }\n        .js-mdropload-down{\n            transition-duration:.5s;\n            -webkit-transition-duration:.5s;\n        }\n        .js-mdropload-up{\n            opacity:0;\n            min-height:30px;\n        }\n        .js-mdropload-down{\n            height:60px;\n            line-height:60px;\n        }\n        .js-mdropload-up,.js-mdropload-down{\n            text-align: center;\n            line-height:30px;\n            width: 100%;\n        }\n        .js-mdropload-message {\n            opacity:0;\n        }\n        ';
         document.body.appendChild(createCss);
     }
 };
@@ -77,19 +77,28 @@ var callback = function callback() {
     var fn = {
         success: function success() {
             if (!that.isLock && that.status.loading) {
-                console.log('success');
                 fn.reset();
-                that.upObj.innerHTML = that.opt.up.template.success;
-                that.downObj.innerHTML = that.opt.down.template.success;
+                if (that.opt.up.template.success) {
+                    that.upObj.innerHTML = that.opt.up.template.success;
+                }
+                if (that.opt.down.template.success) {
+                    that.downObj.innerHTML = that.opt.up.template.success;
+                }
             }
         },
         reset: function reset(mouseY) {
             that.status.loading = false;
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
-            if (mouseY <= 0) {
+            if (mouseY > 0) {
                 that.downObj.css('opacity', '0');
             }
+        },
+
+        // 提供给底部加载下一页使用
+        end: function end() {
+            that.downObj.innerHTML = that.opt.down.template.end;
+            fn.reset();
         }
     };
     return fn;
@@ -150,19 +159,7 @@ var scroll = {
 var $that = window;
 var $d = void 0;
 var $b = void 0;
-//$lock;
 var _$touch;
-// 加载成功
-// let success = (function () {
-//    let that = this;
-//    if (!that.isLock && that.status.loading) {
-//        that.status.loading = false;
-//        that.obj.css('transform', 'translate3d(0,0,0)');
-//        that.upObj.css('opacity', '0');
-//        that.upObj.innerHTML = that.opt.up.template.success;
-//        that.downObj.innerHTML = that.opt.down.template.success;
-//    }
-// });
 
 _$touch = function $touch(element, _opt) {
     var $obj = null;
@@ -187,7 +184,13 @@ _$touch = function $touch(element, _opt) {
             return this.style[key];
         }
     };
-
+    // 判断是否需要对未注册方法进行屏蔽
+    if (!that.opt.up) {
+        that.opt.up = { isNull: true, template: {}, fn: function fn() {} };
+    }
+    if (!that.opt.down) {
+        that.opt.down = { isNull: true, template: {}, fn: function fn() {} };
+    }
     // 事件缓存,以便销毁
     function touchstart(e) {
         _$touch.start.call(that, e);
@@ -215,7 +218,7 @@ _$touch = function $touch(element, _opt) {
         // 已经在执行了，无需再次执行
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
-            // 到底
+            // bottom event
             that.status.loading = true;
             that.downObj.css('opacity', '1', false);
             that.downObj.innerHTML = that.opt.down.template.loading;
@@ -269,14 +272,14 @@ _$touch.prototype.initTemplate = function () {
     // 初始化上部分
     var $div;
     var that = this;
-    if (!document.querySelector('.js-mdropload-up')) {
+    if (!that.opt.up.isNull && !document.querySelector('.js-mdropload-up')) {
         $div = document.createElement('div');
         $div.innerHTML = that.opt.up.template.none;
         $div.className = 'js-mdropload-up';
         this.obj.parentNode.insertBefore($div, this.obj);
     }
     // 初始化下部分
-    if (!this.obj.parentNode.querySelector('.js-mdropload-down')) {
+    if (!this.opt.down.isNull && !this.obj.parentNode.querySelector('.js-mdropload-down')) {
         $div = document.createElement('div');
         $div.innerHTML = this.opt.down.template.none;
         $div.className = 'js-mdropload-down';
@@ -285,8 +288,19 @@ _$touch.prototype.initTemplate = function () {
     that.upObj = this.obj.parentNode.querySelector('.js-mdropload-up');
     that.downObj = this.obj.parentNode.querySelector('.js-mdropload-down');
     //TODO: 此处需要优化
-    that.upObj.css = utils.elementCSS.bind(that.upObj);
-    that.downObj.css = utils.elementCSS.bind(that.downObj);
+    if (that.upObj) {
+        that.upObj.css = utils.elementCSS.bind(that.upObj);
+    } else {
+        that.upObj = {};
+        that.upObj.css = function () {};
+    }
+
+    if (that.downObj) {
+        that.downObj.css = utils.elementCSS.bind(that.downObj);
+    } else {
+        that.downObj = {};
+        that.downObj.css = function () {};
+    }
 };
 
 _$touch.start = function (e) {
@@ -331,6 +345,9 @@ _$touch.end = function (e) {
             this.opt.up && this.opt.up.fn(_cb);
         } else {
             _cb.reset(mouseY);
+        }
+        if (mouseY <= 0) {
+            this.downObj.innerHTML = this.opt.down.template.loading;
         }
     }
     // this.upObj.innerHTML = this.opt.up.template.none;
