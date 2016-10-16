@@ -234,6 +234,7 @@ _$touch = function $touch(element, _opt) {
 
     function eventscroll(e) {
         // 已经在执行了，无需再次执行
+        var that = this;
         if (that.status.loading) return;
         if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
             // bottom event
@@ -250,7 +251,7 @@ _$touch = function $touch(element, _opt) {
     window[str.a](touchEvent.eventResize, touchresize);
     $obj[str.a](touchEvent.eventcancel, touchcancel);
     $obj[str.a](str.te, transitionedn);
-    window[str.a](str.scroll, eventscroll);
+    window[str.a](str.scroll, eventscroll.bind(that));
     // 销毁
     that.destroy = function () {
         callback.call(that).reset();
