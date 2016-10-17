@@ -204,10 +204,14 @@ _$touch = function $touch(element, _opt) {
     };
     // 判断是否需要对未注册方法进行屏蔽
     if (!that.opt.up) {
-        that.opt.up = { isNull: true, template: {}, fn: function fn() {} };
+        that.opt.up = {
+            isNull: true, template: {}, fn: function fn() {}
+        };
     }
     if (!that.opt.down) {
-        that.opt.down = { isNull: true, template: {}, fn: function fn() {} };
+        that.opt.down = {
+            isNull: true, template: {}, fn: function fn() {}
+        };
     }
     // 事件缓存,以便销毁
     function touchstart(e) {
@@ -285,6 +289,10 @@ _$touch = function $touch(element, _opt) {
         loading: false
     };
     return that;
+};
+
+_$touch.prototype.cancel = function () {
+    callback.call(this).reset();
 };
 
 _$touch.prototype.initTemplate = function () {
@@ -414,7 +422,9 @@ var index = (function (_el, _opt) {
         throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
     }
     _el.classList.add(str.jmd);
-    return new _$touch(_el, _opt);
+    var $fn = new _$touch(_el, _opt);
+    //$fn.prototype = $touch.prototype;
+    return $fn;
 });
 
 return index;
