@@ -80,21 +80,25 @@ var callback = function callback() {
     var that = this;
     var fn = {
         success: function success() {
-            if (!that.isLock && that.status.loading) {
+            console.log(that.status.lock, that.status.loading);
+            if (!that.status.lock && that.status.loading) {
                 fn.reset();
                 if (that.opt.up.template.success) {
                     that.upObj.innerHTML = that.opt.up.template.success;
                 }
                 if (that.opt.down.template.success) {
+                    console.log('修改文字');
                     that.downObj.innerHTML = that.opt.up.template.success;
                 }
             }
         },
         reset: function reset(mouseY) {
-            that.status.loading = false;
+            console.log(mouseY);
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
             if (mouseY > 0) {
+                that.status.bottomEvent = false;
+                that.status.loading = false;
                 that.downObj.css('opacity', '0');
             }
         },
@@ -174,12 +178,117 @@ var str = {
     o: 'opacity'
 };
 
+var touchStart = function (e) {
+    if (this.status.lock) return;
+    // e.preventDefault();
+    // 取当前tf高度
+    this.offsetY = this.obj.css(str.tf).split(',')[1].replace('px', '').trim() * 1;
+    if (isNaN(this.offsetY)) {
+        this.offsetY = 0;
+    }
+    this.status.lock = true;
+    this.obj.css(str.td, '0s');
+    this.upObj.css(str.td, '0s');
+    this.downObj.css(str.o, '1');
+    this.startMouse = utils.mouseXY(e);
+    // 再次初始化字符
+    this.upObj.innerHTML = this.opt.up.template.none;
+    // this.downObj.innerHTML = this.opt.down.template.none;
+}
+
+var scrollTimeout = null;
+var scrollEvent = function (e) {
+    // 已经在执行了，无需再次执行
+    var that = this;
+    if (that.status.loading || that.status.bottomEvent) return;
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function () {
+        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
+            // bottom event
+            console.log('执行down');
+            that.status.loading = true;
+            that.status.bottomEvent = true;
+            //setTimeout(function () {
+            //    that.status.bottomEvent = false;
+            //}, 500);
+            that.downObj.css(str.o, '1', false);
+            that.downObj.innerHTML = that.opt.down.template.loading;
+            that.opt.down && that.opt.down.fn(callback.call(that));
+        } else {
+            console.log('不执行down');
+        }
+    }, 100);
+}
+
+var touchEnd = function (e) {
+    if (this.status.lock) {
+        e.stopPropagation();
+        this.endMouse = utils.mouseXY(e);
+        var mouseY = this.endMouse.y - this.startMouse.y;
+        this.obj.css(str.td, '.5s');
+        if (mouseY < this.opt.height) {
+            this.obj.css(str.tf, str.t3d + '(0,0px,0)');
+        } else {
+            this.obj.css(str.tf, str.t3d + '(0,' + this.opt.height + 'px,0)');
+        }
+        this.upObj.css(str.tf, str.t3d + '(0,0,0)');
+        this.upObj.css(str.td, this.opt.animationTime + 's');
+        // 操作完成之后的回调方法
+        this.status.lock = false;
+        var _cb = callback.call(this);
+        // 查询是否可以释放更新
+        if (mouseY > this.opt.height) {
+            this.upObj.innerHTML = this.opt.up.template.loading;
+            this.status.loading = true;
+            this.opt.up && this.opt.up.fn(_cb);
+        } else {
+            _cb.reset(mouseY);
+        }
+        //if (mouseY <= 0) {
+        //    this.downObj.innerHTML = this.opt.down.template.loading;
+        //}
+    }
+    // this.upObj.innerHTML = this.opt.up.template.none;
+}
+
+var touchMove = function (e) {
+    var that = this;
+    if (that.status.lock) {
+        var mouse = utils.mouseXY(e);
+        var mouseY = mouse.y - that.startMouse.y;
+        // 解决与iScroll冲突问题
+        if (scroll.getScrollTop() === 0 && mouseY > 0) {
+            console.log('move');
+            e.preventDefault();
+            // 判断是否固定距离,默认为一半屏幕高度
+            if (mouseY > 0 && mouseY < that.opt.windowHeight) {
+                var offset = (mouseY + that.offsetY) / 2;
+                var o = (offset / that.opt.height).toFixed(2);
+                o = o > 1 ? 1 : o;
+                that.obj.css(str.tf, str.t3d + '(0,' + offset + 'px,0)');
+                that.upObj.css(str.o, o);
+                // 操作下拉提示框
+                var offsetUpobjHeight = (offset - that.opt.height) / 2;
+                that.upObj.css(str.tf, str.t3d + '(0,' + (offsetUpobjHeight < 0 ? 0 : offsetUpobjHeight) + 'px,0)');
+            }
+            if (mouseY > that.opt.height) {
+                that.upObj.innerHTML = that.opt.up.template.message;
+            }
+        }
+    }
+}
+
+var touchCacnecl = function (e) {
+    // fixbug touchend可能异常不触发
+    callback.call(this).reset();
+}
+
 var $that = window;
 var $d = void 0;
 var $b = void 0;
-var _$touch;
+var $touch;
 
-_$touch = function $touch(element, _opt) {
+$touch = function $touch(element, _opt) {
     var $obj = null;
     var that = this;
     $d = $that.document;
@@ -214,45 +323,32 @@ _$touch = function $touch(element, _opt) {
         };
     }
     // 事件缓存,以便销毁
+    // bind(that)?
     function touchstart(e) {
-        _$touch.start.call(that, e);
+        touchStart.call(that, e);
     }
 
     function touchend(e) {
-        _$touch.end.call(that, e);
+        touchEnd.call(that, e);
     }
 
     function touchmove(e) {
-        _$touch.move.call(that, e);
-    }
-
-    function touchresize(e) {
-        _$touch.resize.call(that, e);
+        touchMove.call(that, e);
     }
 
     function touchcancel(e) {
-        _$touch.cancel.call(that, e);
+        touchCacnecl.call(that, e);
     }
 
     function transitionedn(e) {}
 
     function eventscroll(e) {
-        // 已经在执行了，无需再次执行
-        var that = this;
-        if (that.status.loading) return;
-        if (scroll.getScrollTop() + scroll.getWindowHeight() >= scroll.getScrollHeight() - 50) {
-            // bottom event
-            that.status.loading = true;
-            that.downObj.css(str.o, '1', false);
-            that.downObj.innerHTML = that.opt.down.template.loading;
-            that.opt.down && that.opt.down.fn(callback.call(that));
-        }
+        scrollEvent.call(that, e);
     }
 
     $obj[str.a](touchEvent.eventStart, touchstart);
     $obj[str.a](touchEvent.eventEnd, touchend);
     $obj[str.a](touchEvent.eventMove, touchmove);
-    window[str.a](touchEvent.eventResize, touchresize);
     $obj[str.a](touchEvent.eventcancel, touchcancel);
     $obj[str.a](str.te, transitionedn);
     window[str.a](str.scroll, eventscroll.bind(that));
@@ -265,7 +361,6 @@ _$touch = function $touch(element, _opt) {
         $obj[str.r](touchEvent.eventcancel, touchcancel);
         $obj[str.r](str.te, transitionedn);
         $obj.classList.remove(str.jmd);
-        window[str.r](touchEvent.eventResize, touchresize);
         window[str.r](str.scroll, eventscroll);
         // 节点回收
         try {
@@ -291,11 +386,11 @@ _$touch = function $touch(element, _opt) {
     return that;
 };
 
-_$touch.prototype.cancel = function () {
+$touch.prototype.cancel = function () {
     callback.call(this).reset();
 };
 
-_$touch.prototype.initTemplate = function () {
+$touch.prototype.initTemplate = function () {
     // 初始化上部分
     var $div;
     var that = this;
@@ -330,87 +425,6 @@ _$touch.prototype.initTemplate = function () {
     }
 };
 
-_$touch.start = function (e) {
-    if (this.status.lock) return;
-    // e.preventDefault();
-    // 取当前tf高度
-    this.offsetY = this.obj.css(str.tf).split(',')[1].replace('px', '').trim() * 1;
-    if (isNaN(this.offsetY)) {
-        this.offsetY = 0;
-    }
-    this.status.lock = true;
-    this.status.loading = false;
-    this.obj.css(str.td, '0s');
-    this.upObj.css(str.td, '0s');
-    this.downObj.css(str.o, '1');
-    this.startMouse = utils.mouseXY(e);
-    // 再次初始化字符
-    this.upObj.innerHTML = this.opt.up.template.none;
-    this.downObj.innerHTML = this.opt.down.template.none;
-};
-
-_$touch.end = function (e) {
-    if (this.status.lock) {
-        e.stopPropagation();
-        this.endMouse = utils.mouseXY(e);
-        var mouseY = this.endMouse.y - this.startMouse.y;
-        this.obj.css(str.td, '.5s');
-        if (mouseY < this.opt.height) {
-            this.obj.css(str.tf, str.t3d + '(0,0px,0)');
-        } else {
-            this.obj.css(str.tf, str.t3d + '(0,' + this.opt.height + 'px,0)');
-        }
-        this.upObj.css(str.tf, str.t3d + '(0,0,0)');
-        this.upObj.css(str.td, this.opt.animationTime + 's');
-        // 操作完成之后的回调方法
-        this.status.lock = false;
-        var _cb = callback.call(this);
-        // 查询是否到底部
-        if (mouseY > this.opt.height) {
-            this.upObj.innerHTML = this.opt.up.template.loading;
-            this.status.loading = true;
-            this.opt.up && this.opt.up.fn(_cb);
-        } else {
-            _cb.reset(mouseY);
-        }
-        if (mouseY <= 0) {
-            this.downObj.innerHTML = this.opt.down.template.loading;
-        }
-    }
-    // this.upObj.innerHTML = this.opt.up.template.none;
-};
-_$touch.move = function (e) {
-    var that = this;
-    if (that.status.lock) {
-        var mouse = utils.mouseXY(e);
-        var mouseY = mouse.y - that.startMouse.y;
-        // 解决与iScroll冲突问题
-        if (scroll.getScrollTop() === 0 && mouseY > 0) {
-            console.log('move');
-            e.preventDefault();
-            // 判断是否固定距离,默认为一半屏幕高度
-            if (mouseY > 0 && mouseY < that.opt.windowHeight) {
-                var offset = (mouseY + that.offsetY) / 2;
-                var o = (offset / that.opt.height).toFixed(2);
-                o = o > 1 ? 1 : o;
-                that.obj.css(str.tf, str.t3d + '(0,' + offset + 'px,0)');
-                that.upObj.css(str.o, o);
-                // 操作下拉提示框
-                var offsetUpobjHeight = (offset - that.opt.height) / 2;
-                that.upObj.css(str.tf, str.t3d + '(0,' + (offsetUpobjHeight < 0 ? 0 : offsetUpobjHeight) + 'px,0)');
-            }
-            if (mouseY > that.opt.height) {
-                that.upObj.innerHTML = that.opt.up.template.message;
-            }
-        }
-    }
-};
-_$touch.resize = function (e) {};
-_$touch.cancel = function (e) {
-    // fixbug touchend可能异常不触发
-    callback.call(this).reset();
-};
-
 var index = (function (_el, _opt) {
     // 参数初始化
     css$1.init();
@@ -422,7 +436,7 @@ var index = (function (_el, _opt) {
         throw '1001:无法寻找到可设置的html节点,请确认后再次调用.';
     }
     _el.classList.add(str.jmd);
-    var $fn = new _$touch(_el, _opt);
+    var $fn = new $touch(_el, _opt);
     //$fn.prototype = $touch.prototype;
     return $fn;
 });

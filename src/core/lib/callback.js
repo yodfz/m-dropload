@@ -2,21 +2,25 @@ let callback = function () {
     let that = this;
     let fn = {
         success () {
-            if (!that.isLock && that.status.loading) {
+            console.log(that.status.lock , that.status.loading);
+            if (!that.status.lock && that.status.loading) {
                 fn.reset();
                 if (that.opt.up.template.success) {
                     that.upObj.innerHTML = that.opt.up.template.success;
                 }
                 if (that.opt.down.template.success) {
+                    console.log('修改文字');
                     that.downObj.innerHTML = that.opt.up.template.success;
                 }
             }
         },
         reset (mouseY) {
-            that.status.loading = false;
+            console.log(mouseY);
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
             if (mouseY > 0) {
+                that.status.bottomEvent = false;
+                that.status.loading = false;
                 that.downObj.css('opacity', '0');
             }
         },

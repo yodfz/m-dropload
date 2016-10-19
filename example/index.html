@@ -50,8 +50,11 @@
         },
         down: {
             fn: function (cb) {
-                console.log('触发了上拉操作');
-
+                console.log('触发了下拉操作');
+                setTimeout(function () {
+                    console.log('success');
+                    cb.success();
+                }, 2000);
             },
             template: {
                 none: '上拉刷新',
