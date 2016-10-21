@@ -18,9 +18,9 @@ let callback = function () {
             console.log(mouseY);
             that.obj.css('transform', 'translate3d(0,0,0)');
             that.upObj.css('opacity', '0');
+            that.status.bottomEvent = false;
+            that.status.loading = false;
             if (mouseY > 0) {
-                that.status.bottomEvent = false;
-                that.status.loading = false;
                 that.downObj.css('opacity', '0');
             }
         },
