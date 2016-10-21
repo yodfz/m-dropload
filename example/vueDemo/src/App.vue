@@ -29,6 +29,8 @@ export default {
   components: {
     Hello
   },
+  // 注意 mounted 是2.0用法
+  // 1.0 请使用ready() 或者 vue.@nexttick 自行把控
   mounted () {
     console.log('ready ok')
     vue.Mdropload(
