@@ -1,7 +1,7 @@
 import str from '../lib/str';
 import $utils from '../lib/utils';
 import scroll from '../lib/scroll';
-import touchend from 'touchend';
+import touchend from './touchend';
 
 export default function (e) {
     let that = this;

@@ -1,10 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('touchend')) :
-    typeof define === 'function' && define.amd ? define(['touchend'], factory) :
-    (global.Mdropload = factory(global.touchend));
-}(this, (function (touchend) { 'use strict';
-
-touchend = 'default' in touchend ? touchend['default'] : touchend;
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.Mdropload = factory());
+}(this, (function () { 'use strict';
 
 var utils = {
     //prefix: (function () {
@@ -222,7 +220,7 @@ var scrollEvent = function (e) {
     }, 100);
 }
 
-var touchEnd = function (e) {
+var touchend = function (e) {
     if (this.status.lock) {
         e.stopPropagation();
         this.endMouse = utils.mouseXY(e);
@@ -335,7 +333,7 @@ $touch = function $touch(element, _opt) {
     }
 
     function touchend$$1(e) {
-        touchEnd.call(that, e);
+        touchend.call(that, e);
     }
 
     function touchmove(e) {
