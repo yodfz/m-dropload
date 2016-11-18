@@ -88,7 +88,7 @@ var callback = function callback() {
                 }
                 if (that.opt.down.template.success) {
                     console.log('修改文字');
-                    that.downObj.innerHTML = that.opt.up.template.success;
+                    that.downObj.innerHTML = that.opt.down.template.success;
                 }
             }
         },

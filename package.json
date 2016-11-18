@@ -1,6 +1,6 @@
 {
   "name": "vue-dropload",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "mobile drop load,support base js and vue framework.",
   "main": "dist/MDropload.vue.js",
   "directories": {
@@ -35,5 +35,8 @@
     "babel-preset-es2015-rollup": "^1.2.0",
     "rollup": "^0.36.1",
     "rollup-plugin-babel": "^2.6.1"
+  },
+  "dependencies": {
+    "uglifyjs": "^2.4.10"
   }
 }

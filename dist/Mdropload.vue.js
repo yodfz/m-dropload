@@ -88,7 +88,7 @@ var callback = function callback() {
                 }
                 if (that.opt.down.template.success) {
                     console.log('修改文字');
-                    that.downObj.innerHTML = that.opt.up.template.success;
+                    that.downObj.innerHTML = that.opt.down.template.success;
                 }
             }
         },
@@ -220,7 +220,7 @@ var scrollEvent = function (e) {
     }, 100);
 }
 
-var touchEnd = function (e) {
+var touchend = function (e) {
     if (this.status.lock) {
         e.stopPropagation();
         this.endMouse = utils.mouseXY(e);
@@ -253,12 +253,12 @@ var touchEnd = function (e) {
 
 var touchMove = function (e) {
     var that = this;
+    var screenHeight = window.innerHeight;
     if (that.status.lock) {
         var mouse = utils.mouseXY(e);
         var mouseY = mouse.y - that.startMouse.y;
         // 解决与iScroll冲突问题
         if (scroll.getScrollTop() === 0 && mouseY > 0) {
-            console.log('move');
             e.preventDefault();
             // 判断是否固定距离,默认为一半屏幕高度
             if (mouseY > 0 && mouseY < that.opt.windowHeight) {
@@ -274,6 +274,10 @@ var touchMove = function (e) {
             if (mouseY > that.opt.height) {
                 that.upObj.innerHTML = that.opt.up.template.message;
             }
+        }
+        // 尝试阻止移动丢失
+        if (mouse.y > screenHeight - 100) {
+            touchend.apply(that, e);
         }
     }
 }
@@ -328,8 +332,8 @@ $touch = function $touch(element, _opt) {
         touchStart.call(that, e);
     }
 
-    function touchend(e) {
-        touchEnd.call(that, e);
+    function touchend$$1(e) {
+        touchend.call(that, e);
     }
 
     function touchmove(e) {
@@ -347,7 +351,7 @@ $touch = function $touch(element, _opt) {
     }
 
     $obj[str.a](touchEvent.eventStart, touchstart);
-    $obj[str.a](touchEvent.eventEnd, touchend);
+    $obj[str.a](touchEvent.eventEnd, touchend$$1);
     $obj[str.a](touchEvent.eventMove, touchmove);
     $obj[str.a](touchEvent.eventcancel, touchcancel);
     window[str.a](touchEvent.eventEnd, touchcancel);
@@ -357,7 +361,7 @@ $touch = function $touch(element, _opt) {
     that.destroy = function () {
         callback.call(that).reset();
         $obj[str.r](touchEvent.eventStart, touchstart);
-        $obj[str.r](touchEvent.eventEnd, touchend);
+        $obj[str.r](touchEvent.eventEnd, touchend$$1);
         $obj[str.r](touchEvent.eventMove, touchmove);
         $obj[str.r](touchEvent.eventcancel, touchcancel);
         $obj[str.r](str.te, transitionedn);
