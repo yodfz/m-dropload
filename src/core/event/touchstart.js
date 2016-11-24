@@ -3,6 +3,11 @@ import $utils from '../lib/utils';
 
 export default function (e) {
     if (this.status.lock) return;
+    // 判断是否在可视范围之内
+    var top = this.obj.getBoundingClientRect().top;
+    if (top < 0 || top > window.innerHeight) {
+        return;
+    }
     // e.preventDefault();
     // 取当前tf高度
     this.offsetY = this.obj.css(str.tf).split(',')[1].replace('px', '').trim() * 1;
