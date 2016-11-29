@@ -5,7 +5,7 @@ import scrollevent from '../event/scroll';
 
 export default function (e) {
     if (this.status.lock) {
-        e.preventDefault&&e.preventDefault();
+        e&&e.preventDefault&&e.preventDefault();
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
         this.obj.css(str.td, '.5s');

@@ -38,6 +38,9 @@ let utils = {
     mouseXY: function (_e) {
         // 用于扩展JQ的触摸事件
         var $x, $y;
+        if (!_e) {
+            return {x: 0, y: 0}
+        }
         if (_e.originalEvent && _e.originalEvent.changedTouches) {
             $x = _e.originalEvent.changedTouches[0].pageX;
             $y = _e.originalEvent.changedTouches[0].pageY;

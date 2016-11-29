@@ -44,6 +44,9 @@ var utils = {
     mouseXY: function mouseXY(_e) {
         // 用于扩展JQ的触摸事件
         var $x, $y;
+        if (!_e) {
+            return { x: 0, y: 0 };
+        }
         if (_e.originalEvent && _e.originalEvent.changedTouches) {
             $x = _e.originalEvent.changedTouches[0].pageX;
             $y = _e.originalEvent.changedTouches[0].pageY;
@@ -227,7 +230,7 @@ var scrollEvent = function (e) {
 
 var touchend = function (e) {
     if (this.status.lock) {
-        e.stopPropagation();
+        e && e.preventDefault && e.preventDefault();
         this.endMouse = utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
         this.obj.css(str.td, '.5s');
