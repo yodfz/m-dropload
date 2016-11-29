@@ -5,9 +5,11 @@ import scrollevent from '../event/scroll';
 
 export default function (e) {
     if (this.status.lock) {
-        e&&e.preventDefault&&e.preventDefault();
         this.endMouse = $utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        if (mouseY > 20) {
+            e && e.preventDefault && e.preventDefault();
+        }
         this.obj.css(str.td, '.5s');
         if (mouseY < this.opt.height) {
             this.obj.css(str.tf, str.t3d + '(0,0px,0)');

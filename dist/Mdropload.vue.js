@@ -44,10 +44,13 @@ var utils = {
     mouseXY: function mouseXY(_e) {
         // 用于扩展JQ的触摸事件
         var $x, $y;
-        if (_e.originalEvent && _e.originalEvent.changedTouches) {
+        if (!_e) {
+            return { x: 0, y: 0 };
+        }
+        if (_e.hasOwnProperty('originalEvent') && _e.originalEvent.hasOwnProperty('changedTouches')) {
             $x = _e.originalEvent.changedTouches[0].pageX;
             $y = _e.originalEvent.changedTouches[0].pageY;
-        } else if (_e.changedTouches) {
+        } else if (_e.hasOwnProperty('changedTouches')) {
             $x = _e.changedTouches[0].pageX;
             $y = _e.changedTouches[0].pageY;
         } else {
@@ -180,6 +183,11 @@ var str = {
 
 var touchStart = function (e) {
     if (this.status.lock) return;
+    // 判断是否在可视范围之内
+    var top = this.obj.getBoundingClientRect().top;
+    if (top < 0 || top > window.innerHeight) {
+        return;
+    }
     // e.preventDefault();
     // 取当前tf高度
     this.offsetY = this.obj.css(str.tf).split(',')[1].replace('px', '').trim() * 1;
@@ -222,9 +230,11 @@ var scrollEvent = function (e) {
 
 var touchend = function (e) {
     if (this.status.lock) {
-        e.stopPropagation();
         this.endMouse = utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        if (mouseY > 20) {
+            e && e.preventDefault && e.preventDefault();
+        }
         this.obj.css(str.td, '.5s');
         if (mouseY < this.opt.height) {
             this.obj.css(str.tf, str.t3d + '(0,0px,0)');

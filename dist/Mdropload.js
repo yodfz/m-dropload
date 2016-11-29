@@ -43,21 +43,23 @@ var utils = {
     },
     mouseXY: function mouseXY(_e) {
         // 用于扩展JQ的触摸事件
-        var $x, $y;
-        if (!_e) {
-            return { x: 0, y: 0 };
+        try {
+            var $x, $y;
+            if (_e.originalEvent && _e.originalEvent.changedTouches) {
+                $x = _e.originalEvent.changedTouches[0].pageX;
+                $y = _e.originalEvent.changedTouches[0].pageY;
+            } else if (_e.changedTouches) {
+                $x = _e.changedTouches[0].pageX;
+                $y = _e.changedTouches[0].pageY;
+            } else {
+                $x = _e.pageX;
+                $y = _e.pageY;
+            }
+            return { x: $x, y: $y };
+        } catch (err) {
+            console.log(err);
         }
-        if (_e.originalEvent && _e.originalEvent.changedTouches) {
-            $x = _e.originalEvent.changedTouches[0].pageX;
-            $y = _e.originalEvent.changedTouches[0].pageY;
-        } else if (_e.changedTouches) {
-            $x = _e.changedTouches[0].pageX;
-            $y = _e.changedTouches[0].pageY;
-        } else {
-            $x = _e.pageX;
-            $y = _e.pageY;
-        }
-        return { x: $x, y: $y };
+        return { x: 0, y: 0 };
     },
     //DOM没有提供insertAfter()方法
     insertAfter: function insertAfter(nowNode, newNode) {
@@ -230,9 +232,11 @@ var scrollEvent = function (e) {
 
 var touchend = function (e) {
     if (this.status.lock) {
-        e && e.preventDefault && e.preventDefault();
         this.endMouse = utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        if (mouseY > 20) {
+            e && e.preventDefault && e.preventDefault();
+        }
         this.obj.css(str.td, '.5s');
         if (mouseY < this.opt.height) {
             this.obj.css(str.tf, str.t3d + '(0,0px,0)');
