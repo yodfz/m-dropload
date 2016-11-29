@@ -47,10 +47,10 @@ var utils = {
         if (!_e) {
             return { x: 0, y: 0 };
         }
-        if (_e.originalEvent && _e.originalEvent.changedTouches) {
+        if (_e.hasOwnProperty('originalEvent') && _e.originalEvent.hasOwnProperty('changedTouches')) {
             $x = _e.originalEvent.changedTouches[0].pageX;
             $y = _e.originalEvent.changedTouches[0].pageY;
-        } else if (_e.changedTouches) {
+        } else if (_e.hasOwnProperty('changedTouches')) {
             $x = _e.changedTouches[0].pageX;
             $y = _e.changedTouches[0].pageY;
         } else {
@@ -230,9 +230,11 @@ var scrollEvent = function (e) {
 
 var touchend = function (e) {
     if (this.status.lock) {
-        e && e.preventDefault && e.preventDefault();
         this.endMouse = utils.mouseXY(e);
         var mouseY = this.endMouse.y - this.startMouse.y;
+        if (mouseY > 20) {
+            e && e.preventDefault && e.preventDefault();
+        }
         this.obj.css(str.td, '.5s');
         if (mouseY < this.opt.height) {
             this.obj.css(str.tf, str.t3d + '(0,0px,0)');

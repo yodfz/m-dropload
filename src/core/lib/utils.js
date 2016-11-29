@@ -41,10 +41,10 @@ let utils = {
         if (!_e) {
             return {x: 0, y: 0}
         }
-        if (_e.originalEvent && _e.originalEvent.changedTouches) {
+        if (_e.hasOwnProperty('originalEvent') && _e.originalEvent.hasOwnProperty('changedTouches')) {
             $x = _e.originalEvent.changedTouches[0].pageX;
             $y = _e.originalEvent.changedTouches[0].pageY;
-        } else if (_e.changedTouches) {
+        } else if (_e.hasOwnProperty('changedTouches')) {
             $x = _e.changedTouches[0].pageX;
             $y = _e.changedTouches[0].pageY;
         }
