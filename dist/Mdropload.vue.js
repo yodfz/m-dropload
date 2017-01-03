@@ -368,7 +368,7 @@ $touch = function $touch(element, _opt) {
     $obj[str.a](touchEvent.eventcancel, touchcancel);
     window[str.a](touchEvent.eventEnd, touchcancel);
     $obj[str.a](str.te, transitionedn);
-    window[str.a](str.scroll, eventscroll.bind(that));
+    window.onscroll = eventscroll.bind(that);
     // 销毁
     that.destroy = function () {
         callback.call(that).reset();
@@ -378,7 +378,8 @@ $touch = function $touch(element, _opt) {
         $obj[str.r](touchEvent.eventcancel, touchcancel);
         $obj[str.r](str.te, transitionedn);
         $obj.classList.remove(str.jmd);
-        window[str.r](str.scroll, eventscroll);
+        window.onscroll = null;
+        // window[str.r](str.scroll, eventscroll);
         window[str.r](touchEvent.eventcancel, touchcancel);
         // 节点回收
         try {
@@ -462,6 +463,7 @@ var core = (function (_el, _opt) {
 var index_vue = {
     install: function install(vue, options) {
         vue.prototype.Mdropload = core;
+        vue.Mdropload = core;
     }
 };
 
