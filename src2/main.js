@@ -17,7 +17,7 @@ $touch = function (_e, _opt) {
  * 配置
  * @returns {{}}
  */
-$touch.config = function () {
+$touch.prototype.config = function () {
     return _config;
 };
 
